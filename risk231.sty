@@ -1,0 +1,158 @@
+% risk201.sty -- shared style for the RISK 201 Beamer lecture notes
+%
+% Usage in a chapter file:
+%   \documentclass{beamer}
+%   \usepackage{risk201}
+%   \setchapter{4}                  % sections numbered 4.1, 4.2, ...
+%   \title{RISK 201: <Chapter name>}
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{risk231}[2026/11/03 RISK 231 lecture slides]
+
+%----------------------------------------------------------------------
+% Beamer appearance (from Slides_sample.TEX)
+%----------------------------------------------------------------------
+\mode<presentation> {\usetheme{default}}
+%\setbeamersize{text margin left=10mm,text margin right=10mm}
+\setbeamertemplate{footline}[frame number]
+
+%----------------------------------------------------------------------
+% Packages
+%----------------------------------------------------------------------
+\RequirePackage{amssymb}
+\RequirePackage{amsthm}
+\RequirePackage{amsmath}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{needspace}
+\RequirePackage{comment}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\RequirePackage{graphicx}
+\RequirePackage{bbm, dsfont}
+\RequirePackage{actuarialangle}   % annuity symbols: a_{\angl{n}i}
+
+\usetikzlibrary{arrows,shapes,calc,positioning}
+
+%----------------------------------------------------------------------
+% Theorem-like environments (from Slides_sample.TEX)
+%----------------------------------------------------------------------
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+%
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{remk}{Definition}[section]
+\newtheorem{exam}{Example}[section]
+\newtheorem{prob}{Exercise}[section]
+\newtheorem{solu2}{Solution}[section]
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+
+%----------------------------------------------------------------------
+% Title-page information
+%----------------------------------------------------------------------
+\author{Himchan Jeong, FSA}
+\institute{Department of Statistics \& Actuarial Science \\Simon Fraser University}
+\date{}
+
+% \setchapter{N}: number sections N.1, N.2, ...
+\newcommand{\setchapter}[1]{\renewcommand{\thesection}{#1.\arabic{section}}}
+
+%----------------------------------------------------------------------
+% Math operators
+%----------------------------------------------------------------------
+\newcommand{\dif}{\operatorname{d}}
+\newcommand{\var}{\operatorname{Var}}
+
+%----------------------------------------------------------------------
+% Colours (green/orange match the original PowerPoint slides)
+%----------------------------------------------------------------------
+\definecolor{dgreen}{RGB}{84,130,53}
+\definecolor{dorange}{RGB}{237,125,49}
+\colorlet{accent}{dorange}
+
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{dgreen}{#1}}
+\newcommand{\orange}[1]{\textcolor{dorange}{#1}}
+
+% Cash outflows / inflows on timelines
+\newcommand{\cout}[1]{\textcolor{red}{#1}}
+\newcommand{\cin}[1]{\textcolor{dgreen}{#1}}
+
+%----------------------------------------------------------------------
+% Timelines
+%----------------------------------------------------------------------
+% Size of the labels in \timeline and \cfdiagram
+% (a chapter may use \renewcommand{\tlsize}{\footnotesize})
+\newcommand{\tlsize}{\scriptsize}
+
+% \timeline[ellipsis positions]{length}{position/label pairs}
+%   ticks with time labels below; optional "..." below the given positions
+\newcommand{\timeline}[3][]{%
+  \begin{tikzpicture}
+    \draw (0,0) -- (#2,0);
+    \foreach \x/\lab in {#3} {
+      \draw (\x,0.12) -- (\x,-0.12);
+      \node[below] at (\x,-0.12) {\tlsize $\lab$};
+    }
+    \foreach \x in {#1} {
+      \node[below] at (\x,-0.12) {\tlsize $\ldots$};
+    }
+  \end{tikzpicture}%
+}
+
+% \cfdiagram[extra tikz]{length}{position/time-label pairs}{position/amount pairs}
+%   ticks with time labels below and amounts above
+\newcommand{\cfdiagram}[4][]{%
+  \begin{tikzpicture}
+    \draw (0,0) -- (#2,0);
+    \foreach \x/\lab in {#3} {
+      \draw (\x,0.12) -- (\x,-0.12);
+      \node[below] at (\x,-0.12) {\tlsize $\lab$};
+    }
+    \foreach \x/\amt in {#4} {
+      \node[above] at (\x,0.12) {\tlsize \amt};
+    }
+    #1
+  \end{tikzpicture}%
+}
+
+% \cftimeline{length}{position/time-label/amount triples}{extra tikz}
+%   same idea as \cfdiagram, one triple per tick, \small labels
+\newcommand{\cftimeline}[3]{%
+  \begin{tikzpicture}
+    \draw (0,0) -- (#1,0);
+    \foreach \x/\lab/\amt in {#2} {
+      \draw (\x,0.12) -- (\x,-0.12);
+      \node[below] at (\x,-0.12) {\small $\lab$};
+      \node[above] at (\x,0.12) {\small \amt};
+    }
+    #3
+  \end{tikzpicture}%
+}
+
+% \cfrows{length}{position/label pairs}{colour/row-label pairs}
+%   timeline with coloured row labels underneath
+\newcommand{\cfrows}[3]{%
+  \begin{tikzpicture}
+    \draw (0,0) -- (#1,0);
+    \foreach \x/\lab in {#2} {
+      \draw (\x,0.12) -- (\x,-0.12);
+      \node[below] at (\x,-0.12) {\scriptsize $\lab$};
+    }
+    \foreach \c/\rlab [count=\k] in {#3} {
+      \node[anchor=west, text=\c] at (-3,-0.25-0.6*\k) {\small \rlab};
+    }
+  \end{tikzpicture}%
+}
+
+% Blank space for fill-in rows such as "F = ...  C = ..."
+\newcommand{\blank}{\hspace{1.2cm}}
+
+\endinput
