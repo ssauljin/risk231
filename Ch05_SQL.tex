@@ -534,8 +534,8 @@ FROM FAKE_SCHEMA.EXAMPLE_DATA_VW EDV
 \begin{prob}\small
 \begin{enumerate}
   \item Using a \code{LEFT JOIN}, append \code{weight} from the \code{SCHEMA\_B.PlantGrowth}
-        table to the \code{SCHEMA\_A.mtcars} table using \code{ID} and \code{color\_ID},
-        selecting \code{Name}, \code{mpg}, \code{cyl}, and \code{wt} from the \code{mtcars} table.
+        table to the \code{SCHEMA\_A.mtcars} table by matching \code{color\_ID} in \code{mtcars}
+        to \code{ID} in \code{PlantGrowth}, selecting \code{Name}, \code{mpg}, \code{cyl}, and \code{wt} from the \code{mtcars} table.
         Also, create a new column called \code{weight\_diff} that gives the difference of the
         \code{weight} column and the \code{wt} column.
   \vspace{0.5em}
@@ -578,10 +578,11 @@ SELECT
     U.MURDER,
     U.STATE,
     U.ASSAULT
-FROM SCHEMA_A.IRIS I,
-     SCHEMA_B.PLANTGROWTH P,
-     SCHEMA_C.USARRESTS U
-WHERE I.ID = P.ID AND I.STATE = U.STATE
+FROM SCHEMA_A.IRIS I
+        INNER JOIN SCHEMA_B.PLANTGROWTH P
+            ON I.ID = P.ID
+        INNER JOIN SCHEMA_C.USARRESTS U
+            ON I.STATE = U.STATE
 \end{lstlisting}
 \end{frame}
 
@@ -633,9 +634,11 @@ WHERE I.ID = P.ID AND I.STATE = U.STATE
           (by default, leading/trailing spaces).
   \end{itemize}
   \vspace{0.4em}
-  \item \lstinline[language=SQL]|CHARINDEX(x, search_string);|
+  \item \lstinline[language=SQL]|CHARINDEX(search_string, x);|
   \begin{itemize}
-    \item Searches \code{x} for \code{search\_string} and returns the position.
+    \item Searches \code{x} for \code{search\_string} and returns the position of its first
+          occurrence (0 if not found). Note the order: the string to find comes \emph{first}.
+    \item In Oracle/SQLite the equivalent is \lstinline[language=SQL]|INSTR(x, search_string)|.
   \end{itemize}
   \vspace{0.4em}
   \item \lstinline[language=SQL]|REPLACE(x, search_string, replace_string);|
@@ -671,19 +674,9 @@ table to the \code{SCHEMA\_D.lossexpense} table using \code{pol\_id}. Note that
 \begin{lstlisting}[language=SQL]
 SELECT mtcars.Name,
     SUBSTR(mtcars.Name, 1, CHARINDEX(' ', mtcars.Name)-1) AS Brand,
-    SUBSTR(mtcars.Name, CHARINDEX(' ', mtcars.Name),
+    SUBSTR(mtcars.Name, CHARINDEX(' ', mtcars.Name)+1,
            LENGTH(mtcars.Name)) AS Model
 FROM mtcars;
-\end{lstlisting}
-\vspace{0.3em}
-{\small Extract accident year, month, and day from \code{acc\_dt} (format \code{m/d/yyyy}):}
-\begin{lstlisting}[language=SQL]
-SELECT le.acc_dt,
-    SUBSTR(le.acc_dt, -4) AS year,
-    SUBSTR(le.acc_dt, 1, CHARINDEX('/', le.acc_dt)-1) AS month,
-    SUBSTR(SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1), 1,
-           CHARINDEX('/', SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1))-1) AS day
-FROM Schema_D.lossexpense le;
 \end{lstlisting}
 \vspace{0.3em}
 {\small Append \code{premexposures} to \code{lossexpense} via the concatenated \code{pol\_id}:}
@@ -692,6 +685,29 @@ SELECT le.*, pe.*
 FROM SCHEMA_D.lossexpense le LEFT JOIN SCHEMA_D.premexposures pe
     ON CONCAT(le.pol_regsym, le.pol_num) = pe.pol_id;
 \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{String Handling: Practice -- \red{Answers} (cont.)}
+{\small Extract accident year, month, and day from \code{acc\_dt} (format \code{m/d/yyyy}),
+then build a date column from the extracted parts:}
+\begin{lstlisting}[language=SQL,basicstyle=\ttfamily\fontsize{5.6}{6.6}\selectfont]
+SELECT le.acc_dt,
+    SUBSTR(le.acc_dt, -4) AS acc_year,
+    SUBSTR(le.acc_dt, 1, CHARINDEX('/', le.acc_dt)-1) AS acc_month,
+    SUBSTR(SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1), 1,
+           CHARINDEX('/', SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1))-1) AS acc_day,
+    TO_DATE(SUBSTR(le.acc_dt, -4) || '-' ||
+            SUBSTR(le.acc_dt, 1, CHARINDEX('/', le.acc_dt)-1) || '-' ||
+            SUBSTR(SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1), 1,
+                   CHARINDEX('/', SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1))-1),
+            'YYYY-MM-DD') AS acc_date
+FROM SCHEMA_D.lossexpense le;
+\end{lstlisting}
+\begin{itemize}\small
+  \item \code{TO\_DATE(string, format)} converts text to a date; \code{'YYYY-MM-DD'} tells it how
+        the pieces are laid out.
+  \item Shortcut once you know the format: \code{TO\_DATE(le.acc\_dt, 'MM/DD/YYYY')}.
+\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{\code{CASE} Statement}
