@@ -1,0 +1,1256 @@
+\documentclass{beamer}
+\usepackage{risk231}   % shared preamble: packages, theorems, colours, listings
+
+\setchapter{2}         % sections numbered 2.1, 2.2, ...
+
+\title{RISK 231: Excel}
+
+% Function signature in the style of the original slides:
+% \fsig{NAME}{arguments} -> large red NAME(arguments) with italic arguments
+\newcommand{\fsig}[2]{{\color{red!75!black}\large\textsf{#1(\textit{#2})}}}
+
+\begin{document}
+\maketitle
+
+%======================================================================
+\section{Intro to Excel and Functions Part 1}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Intro to Excel $\sim$ Tabs}
+\centering
+\includegraphics[width=0.85\textwidth]{ch02/ribbon_tabs}
+\vspace{0.5em}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\small
+\begin{itemize}
+  \item \textbf{File} -- \textit{saving, printing, options}
+  \item \textbf{Home} -- \textit{formatting and editing commands}
+  \item \textbf{Insert} -- \textit{tables, charts, \& graphs}
+  \item \textbf{Page Layout} -- \textit{headers, footers, print formats}
+  \item \textbf{Formulas} -- \textit{directory of formulas}
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\small
+\begin{itemize}
+  \item \textbf{Data} -- \textit{importing data, filtering, sorting, limitations}
+  \item \textbf{Review} -- \textit{proofing, commenting, protections}
+  \item \textbf{View} -- \textit{spreadsheet or multi-file viewing options}
+  \item \textbf{Developer} -- \textit{VBA and macros portal}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Intro to Excel $\sim$ Tabs}
+Enable the ``Developer'' tab in Excel:
+\begin{enumerate}
+  \item \textbf{Windows version:}
+  \begin{itemize}
+    \item Click the ``File'' button in the top left corner of Excel.
+    \item In the bottom left corner, select ``Options''.
+    \item From the menu that shows up, select ``Customize Ribbon''.
+    \item Check the box of the ``Developer'' tab in the right column.
+  \end{itemize}
+  \vspace{0.5em}
+  \item \textbf{Mac version:}
+  \begin{itemize}
+    \item Click the ``Excel'' tab at the top of the screen.
+    \item Choose the ``Preferences'' option.
+    \item Select the ``Ribbon \& Toolbar'' option.
+    \item Check the box to the left of ``Developer'' in the right column.
+    \item Click the ``Save'' button at the bottom-right corner of the window.
+  \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Intro to Excel $\sim$ Options setup}
+\centering
+\includegraphics[height=0.8\textheight]{ch02/options_formulas}
+\end{frame}
+
+\begin{frame}{Intro to Excel $\sim$ Keyboard Shortcuts}
+{\Large \red{\textbf{Practice these! Know these! Use these!}}}
+\vspace{1em}
+
+A full list of keyboard shortcuts can be found here:
+\begin{center}
+\scriptsize
+\href{https://support.office.com/en-us/article/Excel-shortcut-and-function-keys-1798d9d5-842a-42b8-9c99-9b7213f0040f}{\texttt{https://support.office.com/en-us/article/}}\\
+\href{https://support.office.com/en-us/article/Excel-shortcut-and-function-keys-1798d9d5-842a-42b8-9c99-9b7213f0040f}{\texttt{Excel-shortcut-and-function-keys-1798d9d5-842a-42b8-9c99-9b7213f0040f}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Functions Part 1 $\sim$ Hiding/unhiding}
+\small
+\textbf{Hiding columns:}
+\begin{itemize}
+  \item Highlight the column(s) you want to hide.
+  \item Right-click and select ``Hide''.
+\end{itemize}
+\textbf{Unhiding columns:}
+\begin{itemize}
+  \item Locate the hidden column(s) by finding the lightly coloured line where the
+        hidden column(s) would be on the column index bar.
+  \item Highlight the columns from before to after the lightly coloured line.
+  \item Right-click and select ``Unhide''.
+\end{itemize}
+\textbf{Hiding/unhiding rows:}
+\begin{itemize}
+  \item Apply similar instructions for rows as given above for columns.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Functions Part 1 $\sim$ Hiding/unhiding (cont.)}
+\textbf{Hiding worksheets:}
+\begin{itemize}
+  \item Click on the worksheet tab that you would like to hide.
+  \begin{itemize}
+    \item Note: to hide more than one worksheet at a time, hold down Ctrl as you
+          select the tabs with your mouse.
+  \end{itemize}
+  \item Right-click and select ``Hide''.
+\end{itemize}
+\textbf{Unhiding worksheets:}
+\begin{itemize}
+  \item Right-click on any worksheet tab.
+  \item When the Unhide Worksheet window pops up, select the desired worksheet to
+        unhide and click OK.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Functions Part 1 $\sim$ Simple formulas \& formatting}
+\textbf{Creating simple formulas:}
+\begin{itemize}
+  \item In the desired cell, simply write \code{=} followed by the formula. For example,
+        to add the values of cells D2 and D3 into D4, simply write the formula
+        \code{=D2+D3} in D4.
+\end{itemize}
+\vspace{0.3em}
+\textbf{Formatting} (Home tab):
+\begin{center}
+\includegraphics[width=0.9\textwidth]{ch02/ribbon_formatting}
+\end{center}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\scriptsize
+\begin{itemize}
+  \item \textbf{Font}: text formatting, e.g.\ bold, italics, underlined, font type and size
+  \item Cell(s) border style
+  \item Colour of cell(s) and font colours
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\scriptsize
+\begin{itemize}
+  \item \textbf{Alignment}: alignment of text within cells; \textit{Merge \& Center} merges
+        several cells into one and centres the text; \textit{Wrap Text} makes multiple
+        lines of text stay visible
+  \item \textbf{Number}: number formats, e.g.\ dollar, percentage, dates, number of
+        decimal places displayed, etc.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Functions Part 1 $\sim$ Format Painter}
+\begin{center}
+\includegraphics[height=0.9cm]{ch02/format_painter_button}
+\end{center}
+\begin{itemize}
+  \item Clicking \textbf{once} will copy the format of cells into others.
+  \vspace{0.5em}
+  \item Clicking \textbf{twice} will allow you to copy the format of cells into many
+        others many times until you push Esc.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Functions Part 1 $\sim$ Freeze Panes}
+Super useful when looking at numerous rows or columns and you still want to see the
+index and/or headers.
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\footnotesize
+\begin{itemize}
+  \item Select the cell that represents the top left of the section you want to be
+        ``movable''.
+  \item Go to the View tab in the ribbon and select \textbf{Freeze Panes}.
+  \item Select the type of freezing you want. For example, if you want the column
+        headers to stay but the rows to be fluid, select \textit{Freeze Top Row}; or, if
+        you have selected cell A2, you can just select \textit{Freeze Panes}.
+  \item To unfreeze panes, go to the View tab and select \textit{Unfreeze Panes}.
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\includegraphics[width=\textwidth]{ch02/freeze_panes}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Functions Part 1 $\sim$ ``Copy \& Paste'' vs ``Fill''}
+\centering
+\begin{tikzpicture}[
+    card/.style={draw=black!50, rounded corners=6pt, fill=black!5,
+                 minimum width=1.5cm, minimum height=1.5cm},
+    st/.style={star, star points=5, star point ratio=2.3, minimum size=1.0cm,
+               inner sep=0pt, draw=black!70},
+    act/.style={single arrow, draw=black!60, fill=white, minimum height=2.2cm,
+                single arrow head extend=0.15cm, font=\small, inner sep=3pt}]
+  % copy & paste: original stays
+  \node[card] (c1) at (0,0) {};
+  \node[st, fill=red!80!black] at (c1) {};
+  \node[act] at (2.4,0) {Copy \quad Paste};
+  \node[card] (c2) at (4.8,0) {};
+  \node[st, fill=red!80!black] at (c2) {};
+  % cut & paste: original disappears
+  \node[card, dashed, fill=none] (c3) at (0,-2) {};
+  \node[st, fill=red!35, draw=black!40] at (c3) {};
+  \node[act] at (2.4,-2) {Cut \quad Paste};
+  \node[card] (c4) at (4.8,-2) {};
+  \node[st, fill=red!80!black] at (c4) {};
+\end{tikzpicture}
+
+\vspace{0.8em}
+\begin{columns}[c]
+\begin{column}{0.68\textwidth}
+\small
+\textbf{Fill}: update numerous cells at once using either Ctrl+D or Ctrl+R, or
+double-click or drag the little square (the \emph{fill handle}) at the bottom right
+corner of the cell.
+\end{column}
+\begin{column}{0.25\textwidth}
+\centering
+\includegraphics[width=0.9\textwidth]{ch02/fill_handle}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Functions Part 1 $\sim$ Cell reference -- LOCAL vs ABSOLUTE}
+\centering
+{\Large\textbf{C3}}\\[-1pt]
+{\small \red{Column \; Row}}
+
+\vspace{0.5em}
+\raggedright\small
+When copying/cutting/pasting or filling, we may want the column and/or row to stay the
+same for the new cell location. We can ``lock'' our references so that this can happen:
+\vspace{0.3em}
+
+\begin{tabular}{>{\color{red}\ttfamily}l p{0.78\textwidth}}
+\$C\$3 & ``Absolute'' reference -- i.e.\ the reference will always be C3 \\[2pt]
+C\$3   & The row is locked -- i.e.\ the reference can change columns, but the row will always refer to 3 \\[2pt]
+\$C3   & The column is locked -- i.e.\ the reference can change rows, but the column will always refer to C \\[2pt]
+C3     & ``Local'' reference -- i.e.\ nothing is locked and it will adjust
+\end{tabular}
+
+\vspace{0.6em}
+\begin{columns}[c]
+\begin{column}{0.12\textwidth}
+\centering
+\tikz\node[draw=black!60, rounded corners=4pt, fill=black!5, minimum size=1cm]{\Large F4};
+\end{column}
+\begin{column}{0.85\textwidth}
+\small
+When editing the formula, click on the cell reference you want to change and press
+\textbf{F4} once for absolute reference, twice to lock the row, three times to lock the
+column, and four times for local reference.
+\end{column}
+\end{columns}
+\end{frame}
+
+%======================================================================
+\section{Excel: Functions Part 2}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Functions Part 2 $\sim$ Functions}
+\small
+Excel has hundreds of built-in functions that you can use in your calculations and data
+wrangling. You provide the name of the function and the required (and/or optional) inputs
+and Excel will run the code behind the scenes to provide your output.
+
+\vspace{0.5em}
+You will follow this structure:
+\begin{center}
+\red{\large NAME of FUNCTION (\textit{necessary input, [optional input]})}
+\end{center}
+
+You can also nest functions inside functions. For example, if you wanted to use a
+particular function to calculate an output that would be used as an input into another
+function, you could do it all in one step by nesting the functions:
+\begin{center}
+\red{NAME of FUNCTION (}\green{\textit{NAME of FUNCTION (necessary input, [optional input])}}\red{\textit{, [optional input]})}
+\end{center}
+
+For example:
+\begin{center}
+\large\code{=\red{SUM(}\green{AVERAGE(D3:G3)}\red{,} \green{AVERAGE(A3:C3)}\red{)}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Functions Part 2 $\sim$ VLOOKUP}
+\begin{center}
+\fsig{VLOOKUP}{lookup\_value, table\_array, col\_index\_num, [range\_lookup]}
+\end{center}
+\vspace{0.3em}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.62\textwidth}}
+\toprule
+lookup\_value   & What are you looking up? \\
+table\_array    & What is the range of cells where your data lives for the lookup? \\
+col\_index\_num & Column number of the ranged data that you want to return when the
+                  lookup value is found for that row \\
+{[range\_lookup]} & Do you want an exact match (\code{FALSE}) or do you want Excel to
+                  guess (\code{TRUE}, approximate match)? \\
+\bottomrule
+\end{tabular}
+
+\vspace{1em}
+\textbf{Important:} \textit{Remember that the lookup value should always be in the
+\textbf{first column} of the range for VLOOKUP to work correctly.}
+
+\vspace{0.5em}
+e.g.\ \code{=VLOOKUP(A2,B:C,2,FALSE)}
+\end{frame}
+
+\begin{frame}{Functions Part 2 $\sim$ IF}
+\begin{center}
+\fsig{IF}{logical\_test, [value\_if\_true], [value\_if\_false]}
+\end{center}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.6\textwidth}}
+\toprule
+logical\_test      & The requirement that leads to the THEN and ELSE steps \\
+{[value\_if\_true]}  & What happens if the logical test is true? \\
+{[value\_if\_false]} & What happens if the logical test is false? \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.4em}
+\small
+i.e.\ \emph{If something is true, then do something, otherwise, do a different thing\ldots}
+
+\vspace{0.6em}
+\textbf{Nested IFs} are frequently used. For example, if something is true, then do
+something, otherwise, if something else is true, then do something, otherwise\ldots
+\begin{center}
+\red{IF (\textit{logical test, [value if true],}} \green{IF (\textit{logical test, [value if true],}}
+\purple{IF (\textit{logical test, [value if true], [value if false]})}\green{)}\red{)}
+\end{center}
+\end{frame}
+
+\begin{frame}{Functions Part 2 $\sim$ Named Ranges}
+\footnotesize
+To make writing functions and referencing data sets in general easier, Excel allows you
+to name selected data ranges so that you don't have to list the cell references every
+time they are used.
+
+\vspace{0.4em}
+For example, if you have data in cells A1:G23, you can name the range ``my\_data'' and
+simply refer to it by its name. Easy-peasy!
+
+\vspace{0.4em}
+\textit{Two ways to name a range:}
+\vspace{0.3em}
+
+\begin{columns}[c]
+\begin{column}{0.58\textwidth}
+\begin{itemize}
+  \item Highlight the region and enter the name in the \textbf{Name Box} located in the
+        top left corner of the worksheet, just below the ribbon, and then press Enter.
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\includegraphics[width=0.85\textwidth]{ch02/name_box}
+\end{column}
+\end{columns}
+\vspace{0.4em}
+\begin{columns}[c]
+\begin{column}{0.58\textwidth}
+\begin{itemize}
+  \item Go to the Formulas tab of the ribbon and click on \textbf{Name Manager}. Select
+        New, name the range and define the range in the pop-up. You can refer back to
+        the Name Manager to update, add, or delete your named ranges.
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\includegraphics[width=0.65\textwidth]{ch02/name_manager}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Functions Part 2 $\sim$ Data Validation}
+\small
+Not sure why they call it Data Validation\ldots
+
+If you would like to use a dropdown to make things a bit easier for yourself and any user
+of your Excel file, follow the steps below. There are other really cool options with Data
+Validation as well.
+\begin{itemize}
+  \item Make a list of your desired selections somewhere within your workbook.
+  \item Select the cell for which you would like a dropdown.
+  \item On the Data tab of the ribbon, select \textbf{Data Validation}.
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{ch02/data_validation_ribbon}
+\end{center}
+\begin{itemize}
+  \item Select \textbf{List} and put the range of cells where your desired selections
+        live, and then select OK.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Functions Part 2 $\sim$ INDIRECT}
+\begin{center}
+\fsig{INDIRECT}{ref\_text, [a1]}
+\end{center}
+\vspace{1em}
+The INDIRECT function allows you to use the \emph{contents} of a cell as a reference,
+rather than the cell itself.
+\begin{itemize}
+  \item i.e.\ When used as a nested function, it can grab the contents of a cell and use
+        it as an input into another function.
+\end{itemize}
+\vspace{0.5em}
+This can be particularly useful when referring to worksheet tab names, file names, and
+named ranges.
+
+\vspace{0.5em}
+e.g.\ if cell A1 contains the text \code{my\_data}, then \code{=SUM(INDIRECT(A1))} sums the
+named range \code{my\_data}.
+\end{frame}
+
+%======================================================================
+\section{Excel: Functions Part 3}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Functions Part 3 $\sim$ INDEX}
+\begin{center}
+\fsig{INDEX}{array, row\_num, [column\_num]}
+\end{center}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.62\textwidth}}
+\toprule
+array          & Range of data you are using \\
+row\_num       & Relative row number within the grid of selected data that you are
+                 trying to identify \\
+{[column\_num]} & Relative column number within the grid of selected data that you are
+                 trying to identify \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.8em}
+\small
+The INDEX function is very useful for larger datasets and in conjunction with other
+functions. Usually, you'll be using other functions as inputs into the INDEX function.
+
+\vspace{0.5em}
+Most of the time, you'll use VLOOKUP instead because it is more efficient from a memory
+usage perspective, but there will be times when INDEX is necessary when VLOOKUP is less
+handy.
+\end{frame}
+
+\begin{frame}{Functions Part 3 $\sim$ OFFSET and MATCH}
+\begin{center}
+\fsig{OFFSET}{reference, rows, columns}
+\end{center}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.6\textwidth}}
+\toprule
+reference & Starting (origin) cell \\
+rows      & How many rows down from the origin? \\
+columns   & How many columns to the right from the origin? \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{center}
+\fsig{MATCH}{lookup\_value, lookup\_array, [match\_type]}
+\end{center}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.6\textwidth}}
+\toprule
+lookup\_value   & What am I trying to match? \\
+lookup\_array   & What range of cells am I looking into for my lookup value? \\
+{[match\_type]} & Do I want an exact match \code{0} or an approximate match \code{1}? \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\small
+MATCH will return the reference \emph{position number}. Super useful within other
+functions, like VLOOKUP, INDEX, and OFFSET, e.g.\
+\code{=INDEX(B2:E20, MATCH("Bako",A2:A20,0), 3)}.
+\end{frame}
+
+\begin{frame}{Functions Part 3 $\sim$ Text to Columns}
+\small
+Many times, to save on space, databases will store data in simpler formats, like comma
+separated values (csv). In order to take the raw data and translate it into a grid format
+like we have in Excel, we can use the \textbf{Text to Columns} tool.
+\vspace{0.3em}
+\begin{columns}[c]
+\begin{column}{0.52\textwidth}
+\begin{itemize}
+  \item After pasting (or inserting) your data into the worksheet, oftentimes all in
+        column A, highlight the data.
+  \item After highlighting, go to the Data tab on the ribbon and select
+        \textit{Text to Columns}.
+\end{itemize}
+\end{column}
+\begin{column}{0.46\textwidth}
+\includegraphics[width=\textwidth]{ch02/text_to_columns_ribbon}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Functions Part 3 $\sim$ Text to Columns (cont.)}
+\small
+\begin{columns}[c]
+\begin{column}{0.66\textwidth}
+\begin{itemize}
+  \item If your data is separated with special characters, like commas, choose
+        ``Delimited''. If you want to manually select how the data is split, choose
+        ``Fixed width''. Click Next.
+\end{itemize}
+\end{column}
+\begin{column}{0.3\textwidth}
+\includegraphics[width=\textwidth]{ch02/text_to_columns_delimited}
+\end{column}
+\end{columns}
+\vspace{0.3em}
+\begin{columns}[c]
+\begin{column}{0.66\textwidth}
+\begin{itemize}
+  \item Select the special character that separates your data. You'll see a preview of
+        how the data will be split below. Click Next. On the next screen, you will
+        almost always select ``General'' and then Finish.
+\end{itemize}
+\end{column}
+\begin{column}{0.3\textwidth}
+\centering
+\includegraphics[width=0.75\textwidth]{ch02/text_to_columns_delimiters}
+\end{column}
+\end{columns}
+\vspace{0.3em}
+\begin{itemize}
+  \item If you want to manually select how the data is split, after choosing ``Fixed
+        width'', the next screen will allow you to make your column split selections.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Functions Part 3 $\sim$ Goal Seek}
+\small
+Sometimes, you'll have several pieces of data, but you need to find another piece by
+converging on an answer by allowing some other variable to fluctuate. This situation
+comes up quite frequently in Finance and as an Actuary. We can use the \textbf{Goal Seek}
+tool to do this.
+\begin{columns}[c]
+\begin{column}{0.6\textwidth}
+\begin{itemize}
+  \item Go to the Data tab on the ribbon and select \textit{What-If Analysis}. In the
+        dropdown, select \textit{Goal Seek}.
+\end{itemize}
+\end{column}
+\begin{column}{0.38\textwidth}
+\includegraphics[width=0.8\textwidth]{ch02/goal_seek_menu}
+\end{column}
+\end{columns}
+\vspace{0.2em}
+\begin{columns}[c]
+\begin{column}{0.4\textwidth}
+\includegraphics[width=0.9\textwidth]{ch02/goal_seek_dialog}
+\end{column}
+\begin{column}{0.58\textwidth}
+\footnotesize
+\begin{description}
+  \item[Set cell:] Which cell am I fixing to a certain value?
+  \item[To value:] What value am I aiming for? Note that this is usually zero because we
+        are often using Goal Seek for convergence purposes. It can be anything you want,
+        though.
+  \item[By changing cell:] Which cell is allowed to fluctuate?
+\end{description}
+\end{column}
+\end{columns}
+\end{frame}
+
+%======================================================================
+\section{Excel: Loan Calculator}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Amortization}
+\begin{itemize}
+  \item When you have a large expense (such as a home or car purchase), it would be quite
+        rare that you purchase it only with cash, so we rely on available loans to
+        enable such purchases.
+  \vspace{0.5em}
+  \item Once a loan is initiated, it should be repaid within the pre-determined term by
+        making periodic payments (weekly, bi-weekly, or monthly).
+  \vspace{0.5em}
+  \item Such a process is called `A\red{mort}ization' -- \red{killing off} the loan over
+        time (recall the Latin root word `\red{mort}' -- which means death; it also
+        appears in \red{mort}gage).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Amortization Schedule}
+\begin{itemize}
+  \item There are four main factors that interact and determine the amortization
+        schedule:
+  \begin{itemize}
+    \item Annual percentage rate (APR)
+    \item Length of the term
+    \item Loan principal
+    \item Periodic payment amount
+  \end{itemize}
+  \vspace{0.5em}
+  \item If any three of the above are given, then the remaining item is also determined
+        by the amortization schedule (this requires Goal Seek to solve for it).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Interactions among the factors}
+\begin{itemize}
+  \item All else being equal, the periodic payment amount would increase if
+  \begin{itemize}
+    \item the APR increases,
+    \item the loan principal increases, and
+    \item the length of the term decreases.
+  \end{itemize}
+  \vspace{0.5em}
+  \item Other than Excel, there are many available online calculators that offer an
+        amortization schedule:
+        \url{https://www.calculator.net/finance-calculator.html}
+  \vspace{0.5em}
+  \item More details are available in ACMA 201 (time value of money, mortgages, bonds,
+        etc.)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example: Himchan's mortgage}
+\centering
+\includegraphics[width=0.95\textwidth]{ch02/mortgage_example}
+
+\vspace{0.6em}
+A mortgage needs to be renewed every 3 or 5 years in Canada!\\
+(mine is 5 years fixed-rate -- see the \textbf{Maturity Date} and
+\textbf{Maturity Balance})
+\end{frame}
+
+%======================================================================
+\section{Excel: Functions Part 4}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Functions Part 4 $\sim$ IFERROR}
+\begin{center}
+\fsig{IFERROR}{value, value\_if\_error}
+\end{center}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.62\textwidth}}
+\toprule
+value           & Doing something, usually a function (e.g.\ VLOOKUP) \\
+value\_if\_error & What you want the output to be if there is an error with the function
+                  (e.g.\ set equal to zero) \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.8em}
+i.e.\ \emph{``If this action results in an error, then use this as the output, otherwise,
+use the output from the action''}
+
+\vspace{0.8em}
+e.g.\ \code{=IFERROR(VLOOKUP(A2,B:C,2,FALSE),0)}
+\end{frame}
+
+\begin{frame}{Functions Part 4 $\sim$ SUMIF}
+\begin{center}
+\fsig{SUMIF}{range, criteria, sum\_range}
+\end{center}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.66\textwidth}}
+\toprule
+range      & Define the range to which the criteria applies \\
+criteria   & Define the criteria that triggers items to be included in the sum \\
+sum\_range & Define the range of data to be summed if the criteria is met in the given
+             range for the first input \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.8em}
+i.e.\ \emph{``If the criteria is true for cells in a given range, then sum the values in
+the same rows in another (or the same) given range''}
+
+\vspace{0.8em}
+e.g.\ \code{=SUMIF(A2:A100,"CA",C2:C100)}
+\end{frame}
+
+\begin{frame}{Functions Part 4 $\sim$ Filtering and Sorting}
+\small
+\begin{columns}[c]
+\begin{column}{0.6\textwidth}
+{\large\red{Filtering}}\\\footnotesize
+Select any cell in the column header of your desired table, then use your keyboard
+shortcut (Ctrl+Shift+L) or click on ``Filter'' in the Data ribbon tab. To use the filter,
+open the dropdowns.
+\end{column}
+\begin{column}{0.38\textwidth}
+\includegraphics[width=\textwidth]{ch02/filter_button}
+\end{column}
+\end{columns}
+\vspace{0.2em}
+{\large\red{Sorting}}\\\footnotesize
+There are several ways to get to sorting capabilities: using the dropdown of the filter in
+your table, using the ``Sort'' buttons on the Data ribbon tab, or highlighting a range of
+cells, right-clicking and selecting ``Sort''.
+
+\vspace{0.3em}
+Usually, you will want to sort where the rest of a table adjusts accordingly (keeping the
+rows the same, but in a different order). Sometimes, however, you may want to only adjust
+a portion of the data, leaving everything else in the row the same. You would use
+\textbf{custom sort} for this.
+\begin{center}
+\includegraphics[width=0.62\textwidth]{ch02/sort_dialog}
+\end{center}
+\end{frame}
+
+\begin{frame}{Functions Part 4 $\sim$ VALUE, TEXT, LEFT, RIGHT, MID}
+\small
+\fsig{VALUE}{text}\\
+Turns the given text-filled cell into a value, if possible.
+
+\vspace{0.4em}
+\fsig{TEXT}{value, format\_text}\\
+Turns the given value-filled cell into text, given the specific text format desired. There
+are A LOT of different text formats (e.g.\ \code{"0,000.00"} or \code{"mm/dd/yyyy"}); see
+Excel's help page for TEXT for further examples.
+
+\vspace{0.4em}
+\fsig{LEFT}{text, num\_chars}\\
+Returns the given number of characters from a cell, counting from the left (be careful of
+leading spaces!)
+
+\vspace{0.4em}
+\fsig{RIGHT}{text, num\_chars}\\
+Returns the given number of characters from a cell, counting from the right (be careful
+of trailing spaces!)
+
+\vspace{0.4em}
+\fsig{MID}{text, start\_num, num\_chars}\\
+Returns the given number of characters from a cell, counting from a given starting
+position. (e.g.\ if A5 contains 1234567, then \code{MID(A5,3,2)} = 34)
+\end{frame}
+
+\begin{frame}{Functions Part 4 $\sim$ DATE, YEAR, MONTH, and DAY}
+\fsig{DATE}{year, month, day}\\
+Creates a value in date format, given year, month, and day values. These could be
+manually given or pulled from other portions of cell values using other functions.
+
+\vspace{0.6em}
+\fsig{YEAR}{serial\_number}\\
+Returns the year from a date format, which is stored in the Excel metadata as a serial
+number (i.e.\ the date format displays this serial number in a format we are used to
+seeing).
+
+\vspace{0.6em}
+\fsig{MONTH}{serial\_number}\\
+Returns the month number from a date format.
+
+\vspace{0.6em}
+\fsig{DAY}{serial\_number}\\
+Returns the day number from a date format.
+\end{frame}
+
+\begin{frame}{Functions Part 4 $\sim$ FIND and LEN}
+\begin{center}
+\fsig{FIND}{find\_text, within\_text, [start\_num]}
+\end{center}
+\begin{tabular}{>{\ttfamily\color{red!75!black}}l p{0.64\textwidth}}
+\toprule
+find\_text    & What you are looking for in the string -- the FIND function will return
+                its position number \\
+within\_text  & Location of the string \\
+{[start\_num]} & Starting position in the string from which to search (most of the time you
+                will not enter this because you most often start at the beginning of the
+                string) \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+i.e.\ \emph{``The FIND function will return the position number of a particular text you
+are looking for in a given text string''}
+
+\vspace{1em}
+\fsig{LEN}{text} \quad Returns the numerical length of a given string.
+\end{frame}
+
+%======================================================================
+\section{Excel: Pivot Tables}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Pivot Tables}
+Pivot tables are a fast, flexible, and user-friendly way to summarize and analyze data in
+Excel. They are particularly efficient for ad-hoc analysis.
+\begin{itemize}
+  \item Reference data should be organized as a list or table
+  \item All columns should have headers
+  \item Can't have any empty rows or columns
+\end{itemize}
+\begin{center}
+\footnotesize
+\begin{tabular}{lrr}
+\toprule
+\textbf{Row Labels} & \textbf{Count of PolNum} & \textbf{Sum of Face Amt} \\
+\midrule
+Alfonzo  & 26 & 5236448 \\
+Bako     & 40 & 5492664 \\
+Barajas  & 44 & 6289588 \\
+Barrett  & 53 & 7846295 \\
+Bennett  & 37 & 5132155 \\
+Betts    & 40 & 4893288 \\
+Blanco   & 46 & 5784722 \\
+Bowen    & 40 & 6246566 \\
+\midrule
+\textbf{Grand Total} & \textbf{326} & \textbf{46921726} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ Getting started}
+\small
+\begin{columns}[c]
+\begin{column}{0.58\textwidth}
+To get started, select the starting cell where you want the pivot table to be placed
+(i.e.\ where the top left corner of the pivot will be placed on the sheet). Then, click
+the \textbf{PivotTable} button on the ``Insert'' ribbon tab.
+\end{column}
+\begin{column}{0.38\textwidth}
+\includegraphics[width=\textwidth]{ch02/pivot_insert_button}
+\end{column}
+\end{columns}
+\vspace{1em}
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\includegraphics[width=\textwidth]{ch02/pivot_create_dialog}
+\end{column}
+\begin{column}{0.48\textwidth}
+Click on the arrow button (at the right of \textit{Table/Range}) and select the data you
+would like your pivot table to be based on, making sure that the column headers of the
+data are the first row in your selected data range. Click the arrow again and select OK.
+
+\textit{\blue{(e.g.\ Sales Data 2)}}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ The Field List}
+\begin{columns}[c]
+\begin{column}{0.7\textwidth}
+\scriptsize
+The \textbf{PivotTable Field List} is where you build the structure of the pivot.
+\begin{itemize}
+  \item \textbf{Field list:} the column headers from your data source will be listed here.
+  \item \textbf{\blue{Rows:}} the desired rows for your pivot. Just drag a column header
+        from the list and place it in this box. You can have more than one category here
+        as well, but this may complicate your pivot table. \textit{(e.g.\ Gender and Class)}
+  \item \textbf{\red{Values:}} what data do you want to aggregate by the row splits?
+        Examples could be things like aggregated premiums or claim counts.
+        \textit{(e.g.\ Face Amt)}
+  \item \textbf{\textcolor{cyan!60!black}{Columns:}} you may want to split the data into
+        even finer groupings. You can add additional columns by dragging column headers
+        from the list and placing them in this box. You can have more than one here, but
+        this may complicate your pivot table. \textit{(e.g.\ PremMode)}
+  \item \textbf{\orange{Filters:}} you can also add one or many filters by dragging column
+        headers here. \textit{(e.g.\ drag Gender from the Rows box to the Filters box)}
+\end{itemize}
+\end{column}
+\begin{column}{0.28\textwidth}
+\centering
+\begin{tikzpicture}
+  \node[inner sep=0, anchor=south west] (img) at (0,0)
+       {\includegraphics[height=0.82\textheight]{ch02/pivot_field_list}};
+  \begin{scope}[x={(img.south east)}, y={(img.north west)}, very thick]
+    \draw[black!70]       (0.02,0.585) rectangle (0.98,0.875);
+    \draw[orange]         (0.025,0.365) rectangle (0.495,0.555);
+    \draw[cyan!60!black]  (0.505,0.365) rectangle (0.975,0.555);
+    \draw[blue]           (0.025,0.035) rectangle (0.495,0.355);
+    \draw[red]            (0.505,0.035) rectangle (0.975,0.355);
+  \end{scope}
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ Value Field Settings}
+\small
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+We can choose many different aggregation methods (Sum, Count, Average, Max, Min,
+Product, \ldots) for the data in the body of our Pivot Table, by the different column
+content.
+
+\vspace{0.4em}
+Either right-click on the Pivot Table column or click on the field in the Field List,
+and select ``Value Field Settings''. You can see that we have MANY choices here.
+
+\vspace{0.4em}
+If you click on ``Number Format'', you can also select the way the data is displayed in
+the Pivot Table.
+\end{column}
+\begin{column}{0.5\textwidth}
+\centering
+\includegraphics[height=0.33\textheight]{ch02/pivot_value_field_menu}\hfill
+\includegraphics[height=0.33\textheight]{ch02/pivot_value_field_settings}\\[4pt]
+\includegraphics[height=0.33\textheight]{ch02/pivot_number_format}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ PivotTable Tools: Analyze}
+\small
+When clicking anywhere in your Pivot Table, not only do we see the Field List, but the
+ribbon adds a new tab for \textbf{PivotTable Tools}.
+\begin{center}
+\includegraphics[height=1.3cm]{ch02/pivot_tools_analyze}
+\end{center}
+The \textbf{Analyze} tab contains many capabilities.
+\begin{itemize}
+  \item All the way to the left, you can name your Pivot Table.
+  \item You can also access the PivotTable Options, which have MANY different choices of
+        settings for your table.
+  \item The Analyze tab also has the ability to make \textbf{PivotCharts}, which are built
+        directly off of your Pivot Table and will refresh when you refresh your table.
+  \item Within ``Fields, Items, \& Sets'', you can create \textbf{calculated fields},
+        which are often helpful.
+  \item You can make the Field List disappear and reappear by clicking on the button
+        located on the right of the Analyze tab.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ Refresh}
+\small
+When you set the data source for your Pivot Table, a copy of that data source is created
+in the metadata (i.e.\ ``behind the scenes''). The Pivot Table is actually pulling from
+this \textbf{Pivot Table Cache}. This allows you to make changes in the data without
+directly affecting your Pivot Tables until you desire.
+
+\vspace{0.4em}
+As such, if you make changes to your data and you want those changes reflected in the
+Pivot Table, you will need to click on the \textbf{Refresh} button, which updates the
+Pivot Table Cache with the new data.
+\vspace{0.6em}
+\begin{center}
+\includegraphics[height=2.4cm]{ch02/pivot_refresh_data_tab}
+\quad\raisebox{1.1cm}{\red{\textit{or}}}\quad
+\includegraphics[height=2.4cm]{ch02/pivot_refresh_analyze_tab}
+\end{center}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ Change Data Source}
+You may also want to change the data used for your Pivot Table (e.g.\ maybe you like the
+structure of the Pivot and have another data source with the same column headers, but
+newer data).
+
+\vspace{0.5em}
+Use \textbf{Change Data Source} on the Analyze tab:
+\begin{center}
+\includegraphics[height=3cm]{ch02/pivot_refresh_analyze_tab}
+\end{center}
+\vspace{0.3em}
+\textit{\blue{(e.g.\ Change the data to Sales Data 1)}}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ PivotTable Tools: Design}
+When clicking anywhere in your Pivot Table, not only do we see the Field List, but the
+ribbon adds a new tab for \textbf{PivotTable Tools}.
+\begin{center}
+\includegraphics[height=1.3cm]{ch02/pivot_tools_design}
+\end{center}
+On the \textbf{Design} tab, you can change the colour and format of your Pivot Table. You
+can also decide whether or not to have row and/or column headers, and how/whether to
+display subtotals and/or grand totals.
+
+\vspace{1em}
+\textit{\blue{(e.g.\ Change our Pivot Table to another colour without Grand Totals)}}
+\end{frame}
+
+\begin{frame}{Pivot Tables $\sim$ Drilling down}
+If you would like to view the specific underlying data for a particular value seen in
+your Pivot Table, simply \textbf{double-click} on the value and a new worksheet will be
+created with the rows associated with this value.
+
+\vspace{0.5em}
+For example, maybe you noticed in your Pivot Table that for Males in the state of
+California, the premiums look a little strange for Territory 5. You can double-click on
+this value in the Pivot Table and it will supply all the rows of data for California
+Males in Territory 5 from your data source. Super helpful for deep dive analysis!
+
+\vspace{1em}
+\textit{\blue{(e.g.\ Try it out on our table by double-clicking on any chosen value)}}
+\end{frame}
+
+%======================================================================
+\section{Excel: Charts and Conditional Formatting}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Charts}
+Charts (graphs) are another way to summarize data in Excel. The advantage of using charts
+is that they allow you to present information graphically, which can help you or your
+audience visualize trends or comparisons.
+\vspace{0.5em}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+There are many different types of charts built into Excel. We will focus on the following
+most common types:
+\begin{itemize}
+  \item Bar Charts
+  \item Line Charts
+  \item Pie Charts
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+Components of a Chart:
+\begin{itemize}
+  \item Vertical and Horizontal Axes
+  \item Data Series
+  \item Legend
+  \item Chart Title
+  \item Axis Titles
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Charts $\sim$ Building a chart}
+\small
+\begin{columns}[c]
+\begin{column}{0.45\textwidth}
+To build charts, go to the \textbf{Insert} tab on the ribbon and look for the Charts
+section in the middle of the ribbon. The first row of icons holds the \textbf{bar
+charts}, the second row the \textbf{line charts}, and below them the \textbf{pie
+charts}.
+\end{column}
+\begin{column}{0.5\textwidth}
+\includegraphics[width=\textwidth]{ch02/chart_ribbon}
+\end{column}
+\end{columns}
+\vspace{0.6em}
+\begin{columns}[c]
+\begin{column}{0.4\textwidth}
+Select the type of chart you would like, then select ``Select Data'' on the ribbon tab
+that shows.
+
+\vspace{0.4em}
+Select the data desired. It should populate the axes properly, but if not, you can change
+your selections here or later.
+\end{column}
+\begin{column}{0.58\textwidth}
+\includegraphics[width=\textwidth]{ch02/chart_select_data}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Charts $\sim$ Chart buttons}
+\small
+By clicking in the chart, you will see the following buttons show to the right of the
+chart:
+\vspace{0.3em}
+\begin{columns}[c]
+\begin{column}{0.1\textwidth}
+\includegraphics[height=3cm]{ch02/chart_side_buttons}
+\end{column}
+\begin{column}{0.86\textwidth}
+\begin{itemize}
+  \item[\textbf{+}] Click on this to add items to the chart. For example, you may want
+        to add a legend, axis titles, or other items.
+  \vspace{0.5em}
+  \item[\textbf{Brush}] Click on this to change the formatting of your chart. There are
+        many options here to make your chart look any way you'd like.
+  \vspace{0.5em}
+  \item[\textbf{Filter}] Click on this to filter the data you'd like to see in your chart.
+\end{itemize}
+\end{column}
+\end{columns}
+\vspace{0.5em}
+\begin{columns}[c]
+\begin{column}{0.4\textwidth}
+Also note that you can easily change the data ranges underlying your chart by adjusting
+the coloured sections showing on your data when clicking in the chart.
+\end{column}
+\begin{column}{0.56\textwidth}
+\includegraphics[width=\textwidth]{ch02/chart_data_ranges}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Charts $\sim$ Chart Tools}
+By clicking in the chart, you will also see a \textbf{Chart Tools} tab added to the
+ribbon with the following sub-tabs:
+\begin{center}
+\includegraphics[height=1.4cm]{ch02/chart_tools_tabs}
+\end{center}
+\begin{itemize}
+  \item The \textbf{Design} tab will allow you to change the chart type, change the way
+        the chart looks, change the data, among other things.
+  \item The \textbf{Format} tab allows you to change the chart titles, fonts, colours,
+        etc.
+  \item You can also get to formatting by double-clicking on the chart -- a side window
+        will appear with many formatting options.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conditional Formatting}
+\small
+\begin{columns}[c]
+\begin{column}{0.6\textwidth}
+In the Home tab of the ribbon, there is a choice for \textbf{Conditional Formatting},
+which will give you the option of formatting cells based on their contents and other
+possible rules.
+
+\vspace{0.6em}
+Just highlight the cells you want to be conditionally formatted and then select the type
+of formatting and criteria desired.
+
+\vspace{0.6em}
+You can also manage existing rules for previously assigned formatting. A \emph{rule} is
+the criteria given and the resultant formatting.
+
+\vspace{0.6em}
+There are other cool things you can do, like small data bars or heat mapping the cells.
+
+\vspace{0.6em}
+Cool stuff!
+\end{column}
+\begin{column}{0.36\textwidth}
+\centering
+\includegraphics[height=0.8\textheight]{ch02/conditional_formatting_menu}
+\end{column}
+\end{columns}
+\end{frame}
+
+%======================================================================
+\section{Excel: Functions Part 5}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Functions Part 5 $\sim$ PMT, RATE, and NPER}
+\fsig{PMT}{rate, nper, pv, [fv], [type]}\\
+i.e.\ \emph{``Calculates the payment for a loan (or annuity) based on constant payments
+and a constant interest rate''}
+
+\vspace{0.8em}
+\fsig{RATE}{nper, pmt, pv, [fv], [type], [guess]}\\
+i.e.\ \emph{``Returns the interest rate per period of a loan or an investment''}
+\begin{itemize}
+  \item \code{guess}: giving Excel a ``starting point'' to figure out the interest rate.
+        You can usually just enter a ballpark number, like 0.01.
+\end{itemize}
+
+\vspace{0.5em}
+\fsig{NPER}{rate, pmt, pv, [fv], [type]}\\
+i.e.\ \emph{``Returns the number of periods for an investment based on periodic, constant
+payments and a constant interest rate''}
+\end{frame}
+
+\begin{frame}{Functions Part 5 $\sim$ Print Preparation}
+\centering
+View tab $\rightarrow$ \textbf{Page Break Preview}\\[3pt]
+\includegraphics[height=2.3cm]{ch02/page_break_preview}
+
+\vspace{1em}
+Page Layout tab $\rightarrow$ \textbf{Margins}, \textbf{Orientation}, \textbf{Print Area},
+and the \textbf{Page Setup} dialog launcher (bottom-right corner)\\[3pt]
+\includegraphics[height=2.3cm]{ch02/page_setup_ribbon}
+\end{frame}
+
+\begin{frame}{Functions Part 5 $\sim$ Print Preparation: Page Setup}
+\centering
+\small Page Layout $\rightarrow$ Page Setup dialog launcher $\rightarrow$ \textbf{Page} tab (orientation, scaling, paper size)\\[4pt]
+\includegraphics[height=0.74\textheight]{ch02/page_setup_page}
+\end{frame}
+
+\begin{frame}{Functions Part 5 $\sim$ Print Preparation: Page Setup (cont.)}
+\centering
+\small Page Layout $\rightarrow$ Page Setup dialog launcher $\rightarrow$ \textbf{Margins} tab\\[4pt]
+\includegraphics[height=0.74\textheight]{ch02/page_setup_margins}
+\end{frame}
+
+\begin{frame}{Functions Part 5 $\sim$ Print Preparation: Page Setup (cont.)}
+\centering
+\small Page Layout $\rightarrow$ Page Setup dialog launcher $\rightarrow$ \textbf{Header/Footer} tab\\[4pt]
+\includegraphics[height=0.74\textheight]{ch02/page_setup_header_footer}
+\end{frame}
+
+\begin{frame}{Functions Part 5 $\sim$ Print Preparation: Page Setup (cont.)}
+\centering
+\small Page Layout $\rightarrow$ Page Setup dialog launcher $\rightarrow$ \textbf{Sheet} tab (print area, rows to repeat at top, page order)\\[4pt]
+\includegraphics[height=0.74\textheight]{ch02/page_setup_sheet}
+\end{frame}
+
+\begin{frame}{Functions Part 5 $\sim$ Print Preparation: Print Preview}
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\red{Print Preview}
+\vspace{0.6em}
+\begin{itemize}
+  \item File $\rightarrow$ Print
+  \vspace{0.4em}
+  \item[] Or
+  \vspace{0.4em}
+  \item Page Layout $\rightarrow$ Page Setup $\rightarrow$ Print Preview
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\centering
+\includegraphics[height=0.82\textheight]{ch02/print_backstage}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Functions Part 5 $\sim$ Some Additional Formatting}
+\footnotesize
+\begin{columns}[c]
+\begin{column}{0.68\textwidth}
+\textbf{Wrap Text}: \textit{wrap extra long text into multiple lines within the same cell
+so that you can see all of it.}
+
+\vspace{0.4em}
+\textbf{Merge \& Center}: \textit{combine and centre the contents of the selected cells in a
+new larger cell. This is a great way to create a label that spans multiple columns.}
+\end{column}
+\begin{column}{0.28\textwidth}
+\includegraphics[width=\textwidth]{ch02/wrap_merge_buttons}
+\end{column}
+\end{columns}
+\vspace{0.4em}
+\begin{columns}[c]
+\begin{column}{0.68\textwidth}
+\textbf{Format Painter}: \textit{lets you copy all of the formatting from one group of cells
+and apply it to another group. Think of it as copying and pasting for formatting.}
+\end{column}
+\begin{column}{0.28\textwidth}
+\includegraphics[width=\textwidth]{ch02/format_painter_clipboard}
+\end{column}
+\end{columns}
+\vspace{0.4em}
+\begin{columns}[c]
+\begin{column}{0.6\textwidth}
+\textbf{Column Widths}: \textit{you can change the widths of multiple columns uniformly by
+highlighting the desired columns and then adjusting the width of the first column in your
+selection with your mouse. This will update all selected columns to be the same width.}
+\end{column}
+\begin{column}{0.36\textwidth}
+\includegraphics[width=\textwidth]{ch02/column_width}
+\end{column}
+\end{columns}
+\end{frame}
+
+\end{document}
