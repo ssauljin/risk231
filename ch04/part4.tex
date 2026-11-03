@@ -1,0 +1,653 @@
+%======================================================================
+\section{Functions, Flow Controls \& Loops, and Graphics}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Functions}
+\begin{center}
+\textit{“Abstracting your code into many small functions is key for writing nice R code.”}
+\end{center}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+  \item Remember the concept of functions from school?
+  \item If we plug in 3 for the function $f(x) = 3x^2$ on the right, we will get 27. Easy-peasy.
+  \item Code functions in R work the same way -- there are inputs, there are actions that take place with those inputs inside the function, and then there are outputs.
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\centering
+\includegraphics[width=0.75\textwidth]{ch04/function_machine}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Functions (cont.)}
+\begin{itemize}
+  \item For example:
+\end{itemize}
+\begin{lstlisting}[language=R]
+sum_of_squares <- function(x,y){
+  temp <- x^2 + y^2
+  return(temp)
+}
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+sum_of_squares(2,1)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+sum_of_squares(y=1,x=2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Functions (cont.)}
+\begin{itemize}
+  \item Keep in mind that the environment within a function only exists inside that function, unless you assign an output.
+  \begin{itemize}
+    \item Therefore, any variables created in a function cannot be used outside of it without you explicitly returning them.
+    \item Also, anything to be used in the function needs to be included as an input.
+  \end{itemize}
+  \item Functions are incredibly useful!
+  \begin{itemize}
+    \item If you have code that you want to package so that you can easily use it on many different datasets, lists, etc.
+    \item If you want to use a function on a new dataset, you only have to update the function call.
+  \end{itemize}
+  \item You can think of a function as saved code that performs an action. Super useful!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Functions}
+\framesubtitle{Practice}
+\begin{itemize}
+  \item Create a simple function called \code{add} with inputs \code{(x, y)} to return the sum of x and y:
+\end{itemize}
+\begin{lstlisting}[language=R]
+add <- function(x, y) {
+  temp <- x + y
+  return(temp)
+}
+
+add(1, 3)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 4
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Functions (cont.)}
+\framesubtitle{Practice}
+\begin{itemize}
+  \item Note that you can return your result in a different data structure:
+\end{itemize}
+\begin{lstlisting}[language=R]
+add_list <- function(x, y) {
+  temp <- x + y
+  return(list(vx = x, vy = y, sum = temp))
+}
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+add_list(1, 3)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+$vx
+[1] 1
+
+$vy
+[1] 3
+
+$sum
+[1] 4
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Flow controls}
+\framesubtitle{If()\{else\} and ifelse()}
+\begin{lstlisting}[language=R]
+a <- -1
+
+if (a >= 0) {
+      sqrt(a) # sqrt() is used to calculate the square root
+    } else if (a >= 1000000) {
+      paste0(a, " is too large to calculate.")
+    } else {
+      paste0(a, " is a negative number.")
+}
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "-1 is a negative number."
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Flow controls (cont.)}
+\framesubtitle{If()\{else\} and ifelse()}
+\begin{itemize}
+  \item If you only have two cases, then \code{ifelse()} will be faster:
+\end{itemize}
+\begin{lstlisting}[language=R]
+ifelse(a >= 0, sqrt(a), paste0(a, " is a negative number."))
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "-1 is a negative number."
+\end{lstlisting}
+\begin{itemize}
+  \item \code{ifelse()} can also deal with multiple cases by using nested statements, but you need to be careful when applying to different types of data \textit{(i.e.\ if you have multiple cases, it is safer to use \code{if()\{else\}})}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+ifelse(a >= 0, sqrt(a),
+       ifelse(a >= 1000000, paste0(a, " is too large to calculate."),
+              paste0(a, " is a negative number.")))
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "-1 is a negative number."
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Flow controls}
+\framesubtitle{For loops}
+\begin{itemize}
+  \item This logic \textit{(and code)} is very comparable to what we were doing with VBA.
+  \item For example, what if we want to calculate the summation of 1 to 10 in a loop?
+\end{itemize}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+sum <- 0
+for (i in 1:10) {
+  sum <- sum + i
+}
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+sum
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 55
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Flow controls (cont.)}
+\framesubtitle{For loops}
+\begin{itemize}
+  \item To make it more useful, we can include variables in the range of the index:
+\end{itemize}
+\begin{lstlisting}[language=R]
+low <- 3
+high <- 6
+
+sum2 <- 0
+for (i in low:high) {
+  sum2 <- sum2 + i
+}
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+sum2
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 18
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Flow controls (cont.)}
+\framesubtitle{For loops}
+\begin{itemize}
+  \item Even easier, we can use a pre-defined vector as the range of index:
+\end{itemize}
+\begin{lstlisting}[language=R]
+index_seq <- c(2, 6, 10, 22)
+
+sum3 <- 0
+for (i in index_seq) {
+  sum3 <- sum3 + i
+}
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+sum3
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 40
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Flow controls}
+\framesubtitle{While loops}
+\begin{lstlisting}[language=R]
+sum4 <- 0
+counter <- 0
+while (sum4 <= 10000) {
+  counter <- counter + 1
+  sum4 <- sum4 + counter
+}
+counter
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 141
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+sum4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 10011
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Graphics}
+\framesubtitle{Scatter plots}
+\begin{columns}[T]
+\begin{column}{0.42\textwidth}
+\begin{lstlisting}[language=R]
+x <- 1:6
+y <- c(2, 3, 1, 6, 2, 4)
+\end{lstlisting}
+\begin{itemize}
+  \item Creating a simple scatter plot:
+\end{itemize}
+\begin{lstlisting}[language=R]
+plot(x, y)
+\end{lstlisting}
+\end{column}
+\begin{column}{0.54\textwidth}
+\centering
+\includegraphics[width=\textwidth]{ch04/plot_scatter_basic}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Graphics (cont.)}
+\framesubtitle{Scatter plots}
+\begin{itemize}
+  \item Adding some more elements to the plot:
+  \begin{itemize}
+    \item The \code{main} argument defines the title
+    \item The \code{xlab} and \code{ylab} arguments define the label for the \code{x} and \code{y} axis, respectively
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=R]
+plot(x, y, main = "Plot of x and y", xlab = "variable x", ylab = "variable y")
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.5\textwidth]{ch04/plot_scatter_labels}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Graphics}
+\framesubtitle{Regression lines}
+\begin{itemize}
+  \item Use \code{abline()} to add a regression line to our plot. \textit{Note that \code{lm} stands for “linear model”.}
+\end{itemize}
+\begin{lstlisting}[language=R]
+plot(x, y, main = "Plot of x and y", xlab = "variable x", ylab = "variable y")
+abline(lm(y ~ x))
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.58\textwidth]{ch04/plot_regression_line}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Graphics}
+\framesubtitle{Histograms}
+\begin{itemize}
+  \item \textit{NOTE: When modeling, we will often want a random selection of the data in order to reflect the best proxy of a true full dataset.}
+  \item \textit{When doing random selection, it is often helpful to use seeding. This will allow for peer review as well as the capability to reproduce the same model, if necessary. This is done by using the \code{set.seed()} function.}
+  \item Let’s practice this for the creation of an example histogram, which we can do by using the \code{hist()} function (next slide).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Graphics (cont.)}
+\framesubtitle{Histograms}
+\begin{lstlisting}[language=R]
+set.seed(1) # fix a set of random numbers
+# use rnorm() to generate 1000 random points that follow a standard normal distribution
+y <- rnorm(1000)
+hist(y, breaks = 50) # creates a histogram of y, with 50 bins
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.6\textwidth]{ch04/hist_rnorm_breaks50}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Graphics (cont.)}
+\framesubtitle{Multiple graphs in one}
+\begin{itemize}
+  \item Use \code{par(mfrow = c(nrow, ncol))} to create multiple graphs in one:
+\end{itemize}
+\begin{lstlisting}[language=R]
+x <- 1:6
+y <- c(2, 3, 1, 6, 2, 4)
+# specify this par() before any graphs, create a 2x2 grid
+par(mfrow = c(2, 2))
+plot(x, y)
+set.seed(0)
+hist(rnorm(1000))
+par(mfrow = c(1, 1)) # reset back to single graph after you finish
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.4\textwidth]{ch04/plot_par_mfrow}
+\end{center}
+\end{frame}
+
+\begin{frame}{Loading and using packages}
+\begin{itemize}
+  \item R is incredibly useful because of its built-in statistical capabilities, but is also incredibly versatile because of its crowdsourced nature. Professors and professionals from all over the world are constantly inventing new and improved ways to code processes. As a result, this world community creates super convenient things called \code{packages}. Packages roll together many useful functions for you to access, making coding substantially easier.
+  \item For example, the \code{stats} package or the \code{dplyr} package help to aid in data manipulation.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Loading and using packages (cont.)}
+\begin{itemize}
+  \item \textit{You can take a deep look into what packages contain by using \code{vignette()}.}
+  \item \textit{Try it out for \code{dplyr} by typing into your Console \code{vignette("dplyr")}}
+  \item To see the list of installed packages, run \code{installed.packages()} in your console or go to the “Packages” tab in the Viewer pane.
+  \item When you start an R session, you automatically have several necessary packages loaded to your environment: stats, graphics, utils, and a few others.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Loading and using packages}
+\begin{itemize}
+  \item Say you want to use the count function from the \code{dplyr} package, once you’ve installed it on your machine. You can try the following:
+\end{itemize}
+\begin{lstlisting}[language=R]
+count(iris)   # Note: iris is a dataset that already exists in the R environment
+\end{lstlisting}
+\begin{itemize}
+  \item This doesn’t work because there is no \code{count()} function in base R.
+  \item Usually you do not need to use just one function at a time from a package. To save some keystrokes then, we usually load the packages we need when we start working or at the top of a script, like this:
+\end{itemize}
+\begin{lstlisting}[language=R]
+library(dplyr)
+count(iris)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Loading and using packages (cont.)}
+\begin{itemize}
+  \item This tells R to attach the \code{dplyr} package to your environment. Once that happens, all the objects in the package (mostly functions) will also be attached or ‘loaded’ and made accessible to you without explicit package references in the function call.
+  \item Alternatively, you can supply the package name wherein the count function exists like this:
+\end{itemize}
+\begin{lstlisting}[language=R]
+dplyr::count(iris)
+\end{lstlisting}
+\begin{itemize}
+  \item This tells R to go to the \textbf{libpath}, find the package called \code{dplyr}, and find the function within there called “count”. This is especially useful when you have multiple packages with the same function names.
+  \item For any packages that are not installed already, you can run \code{install.packages("my\_package")}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques}
+\begin{itemize}
+  \item Run the following code to have a raw dataset called “actuary\_raw”:
+\end{itemize}
+\begin{lstlisting}[language=R]
+x <- 1:8
+name <- c("Raymond Li", "", "Peter Smith", NA, "Angela Peterson",
+          "Emily Johnson", "David Scott", "Benjamin Lee")
+gender <- c("M", "F", "M", "M", "F", "F", "F", "M")
+age <- c(25, 23, 22, 50, 30, 42, 29, 36)
+exams <- c(10, 3, 0, 4, 6, 7, 5, 9)
+Q1 <- c(10, 6, 4, 7, 8, 9, 8, 7)
+Q2 <- c(9, 9, 5, 7, 8, 10, 9, 8)
+Q3 <- c(9, 7, 5, 8, 10, 10, 7, 8)
+
+actuary_raw <- data.frame(x, name, gender, age, exams, Q1, Q2, Q3)
+
+actuary_raw
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\begin{itemize}
+  \item The raw dataset \code{actuary\_raw} contains a missing name (\code{NA}) and an empty name (\code{""}):
+\end{itemize}
+\begin{lstlisting}[style=output]
+  x            name gender age exams Q1 Q2 Q3
+1 1      Raymond Li      M  25    10 10  9  9
+2 2                      F  23     3  6  9  7
+3 3     Peter Smith      M  22     0  4  5  5
+4 4            <NA>      M  50     4  7  7  8
+5 5 Angela Peterson      F  30     6  8  8 10
+6 6   Emily Johnson      F  42     7  9 10 10
+7 7     David Scott      F  29     5  8  9  7
+8 8    Benjamin Lee      M  36     9  7  8  8
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\begin{itemize}
+  \item Dealing with missing values:
+  \item Remove observations that contain “NA” \textit{(missing values)} by using the \code{complete.cases()} function:
+\end{itemize}
+\begin{lstlisting}[language=R]
+cc <- complete.cases(actuary_raw) 
+actuary_new <- actuary_raw[cc, ]
+
+actuary_new
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x            name gender age exams Q1 Q2 Q3
+1 1      Raymond Li      M  25    10 10  9  9
+2 2                      F  23     3  6  9  7
+3 3     Peter Smith      M  22     0  4  5  5
+5 5 Angela Peterson      F  30     6  8  8 10
+6 6   Emily Johnson      F  42     7  9 10 10
+7 7     David Scott      F  29     5  8  9  7
+8 8    Benjamin Lee      M  36     9  7  8  8
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\begin{itemize}
+  \item Can also use the \code{na.omit()} function:
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_new <- na.omit(actuary_raw)
+\end{lstlisting}
+\begin{itemize}
+  \item Remove observations that contain "" \textit{(“nothing character”)} by using subsetting by logical vector:
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_new$name == ""
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+actuary_new <- actuary_new[!actuary_new$name == "", ]
+
+actuary_new
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x            name gender age exams Q1 Q2 Q3
+1 1      Raymond Li      M  25    10 10  9  9
+3 3     Peter Smith      M  22     0  4  5  5
+5 5 Angela Peterson      F  30     6  8  8 10
+6 6   Emily Johnson      F  42     7  9 10 10
+7 7     David Scott      F  29     5  8  9  7
+8 8    Benjamin Lee      M  36     9  7  8  8
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques}
+\begin{itemize}
+  \item Deleting unimportant variables:
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_new$x <- NULL
+
+actuary_new
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+             name gender age exams Q1 Q2 Q3
+1      Raymond Li      M  25    10 10  9  9
+3     Peter Smith      M  22     0  4  5  5
+5 Angela Peterson      F  30     6  8  8 10
+6   Emily Johnson      F  42     7  9 10 10
+7     David Scott      F  29     5  8  9  7
+8    Benjamin Lee      M  36     9  7  8  8
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\begin{itemize}
+  \item Adding new variables:
+  \item Add a new variable called \code{S}, which equals to the average of \code{Q1}-\code{Q3}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_new$S <- (actuary_new$Q1 + actuary_new$Q2 + actuary_new$Q3) / 3
+
+actuary_new
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+             name gender age exams Q1 Q2 Q3        S
+1      Raymond Li      M  25    10 10  9  9 9.333333
+3     Peter Smith      M  22     0  4  5  5 4.666667
+5 Angela Peterson      F  30     6  8  8 10 8.666667
+6   Emily Johnson      F  42     7  9 10 10 9.666667
+7     David Scott      F  29     5  8  9  7 8.000000
+8    Benjamin Lee      M  36     9  7  8  8 7.666667
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\begin{itemize}
+  \item The averaging formula above is a bit clunky.
+  \item Instead, we can use the \code{apply(data, margin, function to apply)} function:
+  \begin{itemize}
+    \item \textit{MARGIN = 1: apply to rows, MARGIN = 2: apply to columns}
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_new$S <- apply(actuary_new[, c("Q1", "Q2", "Q3")], MARGIN = 1, mean)
+
+# Average of each column
+apply(actuary_new[, c("Q1", "Q2", "Q3")], MARGIN = 2, mean)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+      Q1       Q2       Q3 
+7.666667 8.166667 8.166667
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\begin{itemize}
+  \item Adding a new variable called \code{title}, a categorical variable with 3 levels:
+  \begin{itemize}
+    \item “FSA” if \code{exams} = 10
+    \item “ASA” if \code{exams} are between 7 and 9
+    \item “student” otherwise
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_new$title <- ifelse(actuary_new$exams == 10, "FSA",
+                            ifelse(actuary_new$exams >= 7 & actuary_new$exams <= 9,
+                                   "ASA", "student"))
+
+actuary_new
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+             name gender age exams Q1 Q2 Q3        S   title
+1      Raymond Li      M  25    10 10  9  9 9.333333     FSA
+3     Peter Smith      M  22     0  4  5  5 4.666667 student
+5 Angela Peterson      F  30     6  8  8 10 8.666667 student
+6   Emily Johnson      F  42     7  9 10 10 9.666667     ASA
+7     David Scott      F  29     5  8  9  7 8.000000 student
+8    Benjamin Lee      M  36     9  7  8  8 7.666667     ASA
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\begin{itemize}
+  \item We can add new observations by using \code{rbind()}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+new_obs <- c("Bruce Lee", "M", 30, 5, 10, 10, 10, 10, "student")
+actuary_new <- rbind(actuary_new, new_obs)
+actuary_new
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+              name gender age exams Q1 Q2 Q3                S   title
+1       Raymond Li      M  25    10 10  9  9 9.33333333333333     FSA
+3      Peter Smith      M  22     0  4  5  5 4.66666666666667 student
+5  Angela Peterson      F  30     6  8  8 10 8.66666666666667 student
+6    Emily Johnson      F  42     7  9 10 10 9.66666666666667     ASA
+7      David Scott      F  29     5  8  9  7                8 student
+8     Benjamin Lee      M  36     9  7  8  8 7.66666666666667     ASA
+71       Bruce Lee      M  30     5 10 10 10               10 student
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques}
+\framesubtitle{Sorting}
+\begin{itemize}
+  \item We can use the \code{order(criteria, decreasing = FALSE)} function to sort your dataframe:
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_sortbyage <- actuary_new[order(actuary_new$age), ]
+actuary_sortbyage
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+              name gender age exams Q1 Q2 Q3                S   title
+3      Peter Smith      M  22     0  4  5  5 4.66666666666667 student
+1       Raymond Li      M  25    10 10  9  9 9.33333333333333     FSA
+7      David Scott      F  29     5  8  9  7                8 student
+5  Angela Peterson      F  30     6  8  8 10 8.66666666666667 student
+71       Bruce Lee      M  30     5 10 10 10               10 student
+8     Benjamin Lee      M  36     9  7  8  8 7.66666666666667     ASA
+6    Emily Johnson      F  42     7  9 10 10 9.66666666666667     ASA
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\framesubtitle{Sorting}
+\begin{lstlisting}[language=R]
+actuary_sortbyagedesc <- actuary_new[order(actuary_new$age, decreasing = TRUE), ]
+actuary_sortbyagedesc
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+              name gender age exams Q1 Q2 Q3                S   title
+6    Emily Johnson      F  42     7  9 10 10 9.66666666666667     ASA
+8     Benjamin Lee      M  36     9  7  8  8 7.66666666666667     ASA
+5  Angela Peterson      F  30     6  8  8 10 8.66666666666667 student
+71       Bruce Lee      M  30     5 10 10 10               10 student
+7      David Scott      F  29     5  8  9  7                8 student
+1       Raymond Li      M  25    10 10  9  9 9.33333333333333     FSA
+3      Peter Smith      M  22     0  4  5  5 4.66666666666667 student
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data Cleaning and Processing Techniques (cont.)}
+\framesubtitle{Sorting}
+\begin{itemize}
+  \item We can also perform a multi-layer sort.
+  \item Let’s sort by gender first, then by S, both in ascending order:
+\end{itemize}
+\begin{lstlisting}[language=R]
+actuary_multisort <- actuary_new[order(actuary_new$gender, actuary_new$S), ]
+actuary_multisort
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+              name gender age exams Q1 Q2 Q3                S   title
+7      David Scott      F  29     5  8  9  7                8 student
+5  Angela Peterson      F  30     6  8  8 10 8.66666666666667 student
+6    Emily Johnson      F  42     7  9 10 10 9.66666666666667     ASA
+71       Bruce Lee      M  30     5 10 10 10               10 student
+3      Peter Smith      M  22     0  4  5  5 4.66666666666667 student
+8     Benjamin Lee      M  36     9  7  8  8 7.66666666666667     ASA
+1       Raymond Li      M  25    10 10  9  9 9.33333333333333     FSA
+\end{lstlisting}
+\end{frame}
+

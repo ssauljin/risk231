@@ -1,0 +1,457 @@
+%======================================================================
+\section{Introduction to Advanced Topics}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Why R for Statistical Modeling?}
+\begin{itemize}
+  \item R is a statistical programming language! Statistics are built-in from its core, which is why it’s really good for predictive modeling including but not limited to actuarial applications.
+  \item For example: If you want to get random samples from a particular distribution, there are functions in R to do so:
+  \begin{itemize}
+    \item \textbf{Normal Distribution}: \code{rnorm()}
+    \item \textbf{Uniform Distribution}: \code{runif()}
+    \item \textbf{Poisson Distribution}: \code{rpois()}
+    \item \textbf{Gamma Distribution}: \code{rgamma()}
+    \item \textbf{Binomial Distribution}: \code{rbinom()}
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R}
+\begin{itemize}
+  \item We will be using the \code{caret} package today.
+  \item If you haven’t already, please install the \code{caret} package by entering \code{install.packages("caret")} in your Console.
+  \item Once you have the \code{caret} package on your computer, you can call its functions by using the \code{library} statement:
+\end{itemize}
+\begin{lstlisting}[language=R]
+library(caret)
+\end{lstlisting}
+\begin{itemize}
+  \item Next, we need to set our working directory so that we can use relative file references.
+  \begin{itemize}
+    \item If you have created a \code{.RProj} file in your directory, you just need to select it by using the dropdown in the top-right corner of the RStudio window.
+    \item If not, you can use the following code to set your working directory \textit{(yours will be a different path than is shown)}:
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=R]
+setwd("C:/Users/ssaul/Desktop/Teaching/ACMA 231")
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{A Simplified Walk-Through of Modeling in R (cont.)}
+\begin{itemize}
+  \item If you have not already done so, download the \code{house.csv} file from Canvas and save it in your working directory.
+  \item The \code{house.csv} data file contains housing values in suburbs of Boston:
+  \begin{itemize}
+    \item \code{x} is an index variable, which should be removed later
+    \item \code{medv} is the median value of owner-occupied homes in \$1000s
+    \item \code{age} is the proportion of owner-occupied units built prior to 1940
+    \item \code{lstat} is the lower percent status of the population
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\begin{itemize}
+  \item Let’s import our data into our R environment:
+\end{itemize}
+\begin{lstlisting}[language=R]
+df <- read.csv("R Ref Files/house.csv", header = TRUE)
+\end{lstlisting}
+\begin{itemize}
+  \item Taking a look at the first 6 rows of the data:
+\end{itemize}
+\begin{lstlisting}[language=R]
+head(df)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x medv  age lstat
+1 1 24.0 65.2  4.98
+2 2 21.6 78.9  9.14
+3 3 34.7 61.1  4.03
+4 4 33.4 45.8  2.94
+5 5 36.2 54.2  5.33
+6 6 28.7 58.7  5.21
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R}
+\framesubtitle{Data Exploration/Processing}
+\begin{itemize}
+  \item Let’s remove the variable \code{x} as it is not needed:
+\end{itemize}
+\begin{lstlisting}[language=R]
+df$x <- NULL
+\end{lstlisting}
+\begin{itemize}
+  \item Let’s check to see if the data has any \code{NA} \textit{(missing values)}. Note that the computer sees TRUE = 1 and FALSE = 0. Therefore, we can use this fact to test if there are any missing values:
+\end{itemize}
+\begin{lstlisting}[language=R]
+nrow(df) - sum(complete.cases(df))
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 0
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Data Exploration/Processing}
+\begin{itemize}
+  \item Let’s check if the data has any \code{""} \textit{(empty characters)}. \textit{Remember that MARGIN = 2 means that we are aggregating by column.}
+\end{itemize}
+\begin{lstlisting}[language=R]
+apply(df == "", 2, sum)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ medv   age lstat 
+    0     0     0
+\end{lstlisting}
+\begin{itemize}
+  \item Let’s take a look at some of the attributes of our data:
+\end{itemize}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+nrow(df)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 506
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+ncol(df)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 3
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Data Exploration/Processing}
+\begin{itemize}
+  \item Let’s take a look at some summary statistics:
+\end{itemize}
+\begin{lstlisting}[language=R]
+summary(df)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+      medv            age             lstat      
+ Min.   : 5.00   Min.   :  2.90   Min.   : 1.73  
+ 1st Qu.:17.02   1st Qu.: 45.02   1st Qu.: 6.95  
+ Median :21.20   Median : 77.50   Median :11.36  
+ Mean   :22.53   Mean   : 68.57   Mean   :12.65  
+ 3rd Qu.:25.00   3rd Qu.: 94.08   3rd Qu.:16.95  
+ Max.   :50.00   Max.   :100.00   Max.   :37.97
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Data Exploration/Processing}
+\begin{itemize}
+  \item Let’s try out graphical data exploration by doing some histograms:
+\end{itemize}
+\begin{lstlisting}[language=R]
+par(mfrow = c(2, 2))
+for (i in 1:ncol(df)) {
+  hist(df[, i], main = paste0("Histogram of ", names(df)[i]), xlab = names(df)[i])
+}
+par(mfrow = c(1, 1))
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.5\textwidth]{ch04/hist_house_variables}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R}
+\begin{itemize}
+  \item For modeling, since it’s impossible to have all of the data from the full real population, we need to work with the data we have. Thus, we want to create a proxy situation for the full, real data.
+  \item We do this by splitting our data into two datasets: \code{Training} and \code{Test}.
+  \begin{itemize}
+    \item We will use the \code{Training} data to adjust and build our model \textit{(i.e.\ “train” our model)} how to interpret, and thus predict, the behavior of the data.
+    \item We then do a final test of how well this model might work with the real population by using a proxy dataset, our \code{Test} data.
+  \end{itemize}
+  \item The general rule of thumb on how to split the data is a random 80/20 split, 80\% going to the \code{Training} dataset and 20\% going to the \code{Test}.
+\end{itemize}
+\begin{lstlisting}[language=R]
+set.seed(0)
+randrows <- sample(1:nrow(df), 0.8 * nrow(df))
+df_train <- df[randrows, ]
+df_test <- df[-randrows, ]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R}
+\framesubtitle{Fitting Linear Regression Models}
+\begin{itemize}
+  \item We use the \code{lm(formula, data)} function to fit simple univariate linear models in R.
+  \item In this data, we will use \code{medv} as our dependent \textit{(target)} variable, and will use \code{age} \& \code{lstat} and their derivation terms as independent variables \textit{(predictors)}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+model_1 <- lm(medv ~ age + lstat, data = df_train)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Fitting Linear Regression Models}
+\begin{itemize}
+  \item Let’s take a look at the model summary and its results \textit{(coefficients)}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+summary(model_1)
+\end{lstlisting}
+\begin{lstlisting}[style=output,basicstyle=\ttfamily\tiny\color{black!75}]
+Call:
+lm(formula = medv ~ age + lstat, data = df_train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-15.927  -3.976  -1.325   1.989  23.245 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 33.29776    0.81765  40.724   <2e-16 ***
+age          0.03217    0.01368   2.352   0.0191 *  
+lstat       -1.02408    0.05484 -18.673   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.295 on 401 degrees of freedom
+Multiple R-squared:  0.5406, Adjusted R-squared:  0.5383 
+F-statistic: 235.9 on 2 and 401 DF,  p-value: < 2.2e-16
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Fitting Linear Regression Models}
+\begin{lstlisting}[language=R]
+model_1$coefficients
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+(Intercept)         age       lstat 
+33.29776447  0.03216801 -1.02408153
+\end{lstlisting}
+\begin{itemize}
+  \item Next, let’s include an interaction term.
+  \begin{itemize}
+    \item Note that \code{*} in the \code{lm()} function does not signify multiplication. It means the model contains an interaction term between the two variables (as well as both main effects).
+    \item \textit{If you want to express multiplication only (the interaction term itself), use \code{:}. For example, \code{age:lstat}.}
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Fitting Linear Regression Models}
+\begin{lstlisting}[language=R]
+model_2 <- lm(medv ~ age * lstat, data = df_train)
+
+summary(model_2)
+\end{lstlisting}
+\begin{lstlisting}[style=output,basicstyle=\ttfamily\tiny\color{black!75}]
+Call:
+lm(formula = medv ~ age * lstat, data = df_train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-15.821  -3.991  -1.250   2.025  23.991 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 34.800861   1.605666  21.674  < 2e-16 ***
+age          0.013281   0.022102   0.601    0.548    
+lstat       -1.213680   0.182743  -6.641 1.02e-10 ***
+age:lstat    0.002216   0.002037   1.088    0.277    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.294 on 400 degrees of freedom
+Multiple R-squared:  0.542,  Adjusted R-squared:  0.5385 
+F-statistic: 157.8 on 3 and 400 DF,  p-value: < 2.2e-16
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Fitting Linear Regression Models}
+\begin{itemize}
+  \item Let’s include a squared term. Note that the \code{{\char94}} operator has a different meaning in the \code{lm()} function, so we need to use \code{I()} for higher power terms.
+\end{itemize}
+\begin{lstlisting}[language=R]
+# I() refers insulate
+model_3 <- lm(medv ~ lstat + I(lstat ^ 2), data = df_train)
+summary(model_3)
+\end{lstlisting}
+\begin{lstlisting}[style=output,basicstyle=\ttfamily\tiny\color{black!75}]
+Call:
+lm(formula = medv ~ lstat + I(lstat^2), data = df_train)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-15.2377  -3.8062  -0.5611   2.4278  25.4438 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 42.715795   0.986307   43.31   <2e-16 ***
+lstat       -2.317835   0.140002  -16.56   <2e-16 ***
+I(lstat^2)   0.043265   0.004239   10.21   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.647 on 401 degrees of freedom
+Multiple R-squared:  0.6303, Adjusted R-squared:  0.6284 
+F-statistic: 341.8 on 2 and 401 DF,  p-value: < 2.2e-16
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R}
+\framesubtitle{Fitting Linear Regression Models}
+\begin{itemize}
+  \item Let’s predict using our linear models. We can use the \code{predict(model, newdata)} function.
+  \item \textit{Note that if we omit the argument \code{newdata}, then it will use our \code{Training} data instead of the designated \code{Test} data.}
+\end{itemize}
+\begin{lstlisting}[language=R]
+model_1_pred <- predict(model_1, newdata = df_test)
+model_2_pred <- predict(model_2, newdata = df_test)
+model_3_pred <- predict(model_3, newdata = df_test)
+\end{lstlisting}
+\begin{itemize}
+  \item We would like to use Root Mean Squared Error (RMSE) as our metric of prediction accuracy.
+  \begin{itemize}
+    \item You will learn more about RMSE and all of these concepts in STAT 452 (or any equivalent courses), but you can google the formula of RMSE if you are interested.
+    \item Essentially, the smaller the RMSE, the better the accuracy.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Fitting Linear Regression Models}
+\begin{itemize}
+  \item We will use the \code{RMSE(actual value, predicted value)} function from the \code{caret} package:
+\end{itemize}
+\begin{lstlisting}[language=R]
+RMSE(df_test$medv, model_1_pred)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5.669556
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+RMSE(df_test$medv, model_2_pred)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5.581035
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+RMSE(df_test$medv, model_3_pred)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5.009564
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R}
+\framesubtitle{Simulation of Linear Models}
+\begin{itemize}
+  \item \code{Y = b0 + b1 * X + e}, i.e.\ $Y = b_0 + b_1 X + e$, where $e$ is an error term and we assume $e \sim N(0, 2^2)$. Also, $b_0 = 10$ and $b_1 = 5$.
+\end{itemize}
+\begin{lstlisting}[language=R]
+# Initialization
+n_sim <- 100000
+b0 <- 10
+b1 <- 5
+# make our result reproducible
+set.seed(0)
+# assume that X ~ N(0, 1)
+X <- rnorm(n_sim) # simulation of X
+e <- rnorm(n_sim, 0, 2) # simulation of e
+# Thus, we can have our simulated Y by
+Y <- b0 + b1 * X + e
+summary(Y)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-13.474   6.342  10.014   9.999  13.650  34.144
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Simulation of Linear Models}
+\begin{itemize}
+  \item We can regress our simulated \code{Y} against \code{X}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+# We can regress our simulated Y against X
+df <- data.frame(cbind(Y, X))
+model <- lm(Y ~ X, data = df)
+summary(model)
+\end{lstlisting}
+\begin{lstlisting}[style=output,basicstyle=\ttfamily\tiny\color{black!75}]
+Call:
+lm(formula = Y ~ X, data = df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-9.5073 -1.3444  0.0036  1.3392  8.5711 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 9.991478   0.006306    1584   <2e-16 ***
+X           5.008128   0.006300     795   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.994 on 99998 degrees of freedom
+Multiple R-squared:  0.8634, Adjusted R-squared:  0.8634 
+F-statistic: 6.32e+05 on 1 and 99998 DF,  p-value: < 2.2e-16
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{A Simplified Walk-Through of Modeling in R}
+\framesubtitle{Simulation of a 95\% Confidence Interval}
+\begin{itemize}
+  \item For a random sample of size $n$ from $N(\mu, \sigma^2)$ with sample mean $\bar{x}$:
+  \[
+    P\left(\bar{x} - 1.96 \frac{\sigma}{\sqrt{n}} \le \mu \le \bar{x} + 1.96 \frac{\sigma}{\sqrt{n}}\right) = 0.95
+  \]
+  \item Interpretation: If we repeat the CI construction process for a large number of independent random samples, then we should expect that 95\% of those realized CIs will include the true mean.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{A Simplified Walk-Through of Modeling in R (cont.)}
+\framesubtitle{Simulation of a 95\% Confidence Interval}
+\begin{lstlisting}[language=R,basicstyle=\ttfamily\tiny]
+# Initialization
+n <- 100                # size of random sample we are going to draw in each simulation
+n_sim <- 1000000        # number of simulation times
+mu <- 5                 # true mean for the normal dist
+sigma <- 2              # true sd for the normal dist
+count <- rep(NA, n_sim) # create an empty vector to store our result
+
+# Simulation
+set.seed(0)
+
+for (i in 1:n_sim) {
+  # draw a random sample with size n from the N(5, 2^2)
+  x <- rnorm(n, mu, sigma)
+  # RHS is a logical test to test whether the true mean is contained in the
+  # realized CI constructed by the random sample above or not; if yes,
+  # then assign TRUE to count[i], and vice versa.
+  count[i] <- (abs(mean(x) - mu) <= qnorm(0.975) * sigma / sqrt(n)) 
+}
+
+# Finally, we can calculate the average of count to see the approx. percentage
+# of how many true means fall into the realized CI in these simulations
+mean(count)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 0.949876
+\end{lstlisting}
+\end{frame}
+

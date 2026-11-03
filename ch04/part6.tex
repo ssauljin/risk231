@@ -1,0 +1,358 @@
+%======================================================================
+\section{Predictive Analytics with R}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}[fragile]{Data exploration}
+\begin{lstlisting}[language=R]
+library(readxl)
+library(caret)
+raw_MEPS <- read_excel(path="MEPS.xlsx",
+                       sheet = "raw_data")
+par(mfrow=c(1,2))
+hist(    raw_MEPS$Total_Charge , main = "Histogram of Total_Charge",
+     xlab = "Total_Charge")
+hist(log(raw_MEPS$Total_Charge), main = "Histogram of log(Total_Charge)",
+     xlab = "log(Total_Charge)")
+\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.45\textwidth]{ch04/hist_total_charge}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Data exploration (cont.)}
+\begin{lstlisting}[language=R]
+raw_MEPS$DRSPLTY_M18      <- as.factor(raw_MEPS$DRSPLTY_M18   )
+raw_MEPS$MEDPTYPE_M18     <- as.factor(raw_MEPS$MEDPTYPE_M18  )
+raw_MEPS$VSTCTGRY         <- as.factor(raw_MEPS$VSTCTGRY      )
+raw_MEPS$VSTRELCN_M18     <- as.factor(raw_MEPS$VSTRELCN_M18  )
+raw_MEPS$SURGPROC         <- as.factor(raw_MEPS$SURGPROC      )
+raw_MEPS$MEDPRESC         <- as.factor(raw_MEPS$MEDPRESC      )
+raw_MEPS$TELEHEALTHFLAG   <- as.factor(raw_MEPS$TELEHEALTHFLAG)
+
+summary(raw_MEPS)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data exploration (cont.)}
+\begin{lstlisting}[style=output,basicstyle=\ttfamily\tiny\color{black!75}]
+   DUPERSID           EVNTIDX             OPDATEYR       OPDATEMM
+ Length:30079       Length:30079       Min.   :2019   Min.   :-8.000
+ Class :character   Class :character   1st Qu.:2019   1st Qu.: 4.000
+ Mode  :character   Mode  :character   Median :2020   Median : 7.000
+                                       Mean   :2020   Mean   : 6.661
+                                       3rd Qu.:2021   3rd Qu.:10.000
+                                       Max.   :2022   Max.   :12.000
+  DRSPLTY_M18     MEDPTYPE_M18      VSTCTGRY     VSTRELCN_M18 SURGPROC
+ -1     :16162   -1     :13917   2      :15542   -8:  143     -8:  188
+ 8      : 1527   15     : 6235   1      : 4469   -7:   32     -7:   29
+ 18     : 1101   8      : 3381   5      : 4107   1 :25153     -1: 2290
+ 20     :  912   10     : 3147   91     : 2581   2 : 4751     1 : 2612
+ 28     :  891   91     :  991   4      : 1453                2 :24960
+ 91     :  820   -8     :  507   6      :  831
+ (Other): 8666   (Other): 1901   (Other): 1096
+ MEDPRESC    TELEHEALTHFLAG  Total_Charge
+ -15: 2247   -15:15652      Min.   :     0.7
+ -8 :  303   1  : 2290      1st Qu.:   289.0
+ -7 :   32   2  :12137      Median :   744.3
+ 1  : 2507                  Mean   :  3327.5
+ 2  :24990                  3rd Qu.:  2325.2
+                            Max.   :665057.6
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Data exploration (cont.)}
+\begin{itemize}
+  \item See the \href{https://meps.ahrq.gov/data_stats/download_data/pufs/h239f/h239fcb.pdf}{MEPS codebook (\texttt{meps.ahrq.gov/.../h239fcb.pdf})} for the detailed description of each of the covariates.
+  \item One can also check that the response variable (\code{Total\_Charge}) is strictly positive and continuous from the summary statistics.
+  \item Lastly, we also split the dataset into two parts, for training and out-of-sample validation purposes:
+\end{itemize}
+\begin{lstlisting}[language=R]
+set.seed(0)
+randrows <- sample(1:nrow(raw_MEPS), 0.8 * nrow(raw_MEPS))
+raw_MEPS_train <- raw_MEPS[ randrows, ]
+raw_MEPS_test  <- raw_MEPS[-randrows, ]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Issues with the dataset}
+\begin{itemize}
+  \item It is very likely that the dataset that you need to analyze in reality is quite messy, which requires a careful examination and pre-processing if needed. Let us explore existing issues with the given dataset as follows.
+\end{itemize}
+\textbf{1. Possible associations among the covariates (which is called ‘co-linearity’ in Statistics)}
+\begin{itemize}
+  \item Consider the descriptions of the following covariates:
+  \begin{itemize}
+    \item \code{DRSPLTY\_M18}: the specialty code of the doctor (only available if the outpatient visit was with a doctor),
+    \item \code{MEDPTYPE\_M18}: type of medical practitioner for the visit (if -1, then it means a doctor).
+  \end{itemize}
+  \item You can recognize that \code{DRSPLTY\_M18} and \code{MEDPTYPE\_M18} are somewhat conflicting so that their (negative) association will be high, which requires more careful analysis.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Issues with the dataset (cont.)}
+\textbf{2. Existence of too many categories for a covariate}
+\begin{itemize}
+  \item If you look at the definition of \code{DRSPLTY\_M18} from the codebook, you can check that there are at least 16 categories of medical practitioners.
+  \item So, if you are trying to fit a linear model using such a variable without any pre-processing, the fitted model could be neither interpretable nor provide acceptable prediction performance.
+\end{itemize}
+\medskip
+\textbf{3. Missing values}
+\begin{itemize}
+  \item You can see that there are some missing values in each of the covariates. We need to think about whether we would just remove all records with missing values, or do something with them.
+  \item Further, we also need to decide whether all missing values are equally treated or not [REFUSED (-7) vs DK (-8)].
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Available methods}
+As such, basically you have two choices here.
+\begin{itemize}
+  \item Use a relatively simpler model that could require ‘extensive’ data pre-processing.
+  \begin{itemize}
+    \item e.g.\ Generalized Linear Models (GLMs)
+  \end{itemize}
+  \item Use a more complex model that requires less data pre-processing but comes with less interpretability.
+  \begin{itemize}
+    \item e.g.\ Classification and Regression Trees (CART), Random forest, Neural network, to name a few\ldots
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{GLMs}
+\begin{itemize}
+  \item Suppose \(Y\) is the response variable (or target variable) that we want to analyze and/or predict, and \(\mathbf{x}\) is the covariates (or independent variables).
+  \item In GLMs, we assume a certain relationship between \(\mathbb{E}[Y|\mathbf{x}]\) and \(\mathbf{x}\) as follows:
+  \[
+    \mathbb{E}[Y|\mathbf{x}] = g (\mathbf{x}\beta),
+  \]
+  where the function \(g\) depends on your choice.
+  \item Generally, we assume \(g(z)=z\) (identity function) if \(Y\) seems to follow a normal distribution, and assume \(g(z)=\exp (z)\) if \(Y\) seems to follow a gamma or Poisson distribution.
+  \item As our response variable \code{Total\_Charge} is strictly positive and continuous, we will use a gamma distribution for the GLM (in short, gamma GLM) so that \(g(z) = \exp(z)\).
+  \item See Chapter 4.6 of ‘An Introduction to Statistical Learning’ (ISL) textbook (\url{https://www.statlearning.com/}) for more explanations on GLMs.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Data pre-processing for a gamma GLM}
+\small
+Here are some modifications that I made on the available covariates \(\mathbf{x}\) for better interpretability and less dimension:
+\begin{itemize}
+  \item \code{DRSPLTY\_M18} was converted to \code{Doctor\_Type} (6 or 8: Family practitioners, -1: Non-doctor, others: Specialists)
+  \item I decided not to consider distinctions among the non-doctor practitioners, so \code{MEDPTYPE\_M18} was removed.
+  \item \code{VSTCTGRY} was converted to \code{Care\_Category} (2: Diagnosis or Treatment, or Others)
+  \item For \code{VSTRELCN\_M18}, \code{SURGPROC} and \code{MEDPRESC}, I treated missing values as NO so that there are only 2 categories (YES or NO).
+  \item For \code{Telehealth}, I treated missing values as MISSING so that there are 3 categories (YES, NO, or MISSING) because it was completely missing for the observations from year 2019 (pre-COVID).
+\end{itemize}
+Note that data pre-processing is an open question so there is usually no ‘Right Answer’. You just use your own insight and prior knowledge about the domain.
+\end{frame}
+
+\begin{frame}[fragile]{Fitting a gamma GLM}
+\begin{lstlisting}[language=R]
+refined_MEPS <- read_excel(path="MEPS.xlsx",
+                           sheet = "refined_data")
+refined_MEPS_train <- refined_MEPS[ randrows, ]
+refined_MEPS_test  <- refined_MEPS[-randrows, ]
+
+fit.glm <- glm(Total_Charge ~ Doctor_Type+Care_Category+Special_Cond+Surgery+
+                 Prescription+Telehealth,
+               family="Gamma"(link='log'), data = refined_MEPS_train)
+
+summary(fit.glm)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Fitting a gamma GLM (cont.)}
+\begin{lstlisting}[style=output,basicstyle=\ttfamily\tiny\color{black!75}]
+Call:
+glm(formula = Total_Charge ~ Doctor_Type + Care_Category + Special_Cond +
+    Surgery + Prescription + Telehealth, family = Gamma(link = "log"),
+    data = refined_MEPS_train)
+
+Coefficients:
+                      Estimate Std. Error t value Pr(>|t|)
+(Intercept)            7.49106    0.08116  92.295  < 2e-16 ***
+Doctor_TypeNon-doctor  0.11441    0.06941   1.648  0.09931 .
+Doctor_TypeSpecialist  0.51381    0.07071   7.266 3.82e-13 ***
+Care_CategoryOthers   -0.15636    0.03527  -4.433 9.33e-06 ***
+Special_CondYes        0.17841    0.04725   3.776  0.00016 ***
+SurgeryYes             1.71024    0.06425  26.619  < 2e-16 ***
+PrescriptionYes       -0.10401    0.06261  -1.661  0.09668 .
+TelehealthUnknown     -0.17348    0.03525  -4.921 8.65e-07 ***
+TelehealthYes         -0.87512    0.06847 -12.782  < 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for Gamma family taken to be 6.760725)
+
+    Null deviance: 64560  on 24062  degrees of freedom
+Residual deviance: 50122  on 24054  degrees of freedom
+AIC: 419305
+
+Number of Fisher Scoring iterations: 7
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Classification and Regression Trees (CART)}
+\begin{itemize}
+  \item CART is a decision rule that assigns a value of \(Y\) depending on \(\mathbf{x}\). You can see that it indeed looks like a ‘tree’.
+\end{itemize}
+\begin{lstlisting}[language=R]
+library(rpart)
+library(rpart.plot)
+
+load("fits.RData")
+# fit.tree = rpart(Total_Charge ~ DRSPLTY_M18 + MEDPTYPE_M18 + VSTCTGRY +
+#                    VSTRELCN_M18 + SURGPROC  + MEDPRESC + TELEHEALTHFLAG,
+#                 data=raw_MEPS_train)
+# it takes a bit more time to fit a CART than a GLM, so I just loaded
+# the fitted CART from a saved Rdata file.
+
+rpart.plot(fit.tree)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Classification and Regression Trees (CART) (cont.)}
+\begin{center}
+\includegraphics[width=0.62\textwidth]{ch04/cart_tree}
+\end{center}
+\begin{itemize}
+  \item Sometimes the tree could be too messy so it needs ‘pruning’ for a better performance.
+  \item See Chapter 8.1 of the ISL textbook (\url{https://www.statlearning.com/}) for more explanations on CARTs.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Random Forest}
+\begin{itemize}
+  \item Recall that prediction from a CART model depends on a single tree. So you may want to grow more ‘trees’ and use all of them to make a decision.
+  \item Random forest is such a concept: grow multiple trees to create a ‘forest’, and make a decision from the consensus of the forest.
+  \item Note that we do not want to grow identical trees 1000 times to build our forest -- so when you train a random forest, a random selection is applied to your dataset so only a part of the dataset is used each time to train each tree.
+  \item Illustration: \href{https://www.researchgate.net/publication/356781515_What_makes_a_good_prediction_Feature_importance_and_beginning_to_open_the_black_box_of_machine_learning_in_genetics/figures}{random forest figure (ResearchGate)}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Random Forest (cont.)}
+\begin{lstlisting}[language=R]
+library(randomForest)
+#fit.rf <- randomForest(Total_Charge ~ DRSPLTY_M18 + MEDPTYPE_M18 + VSTCTGRY +
+#                         VSTRELCN_M18 + SURGPROC  + MEDPRESC + TELEHEALTHFLAG,
+#                       data=raw_MEPS_train)
+# it takes more time to fit a random forest than a GLM, so I just loaded
+# the fitted random forest from a saved Rdata file.
+\end{lstlisting}
+\begin{itemize}
+  \item See Chapters 8.2.1--8.2.2 of the ISL textbook (\url{https://www.statlearning.com/}) for more explanations on random forests.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Neural network}
+\begin{itemize}
+  \item It is a way more complicated model (sometimes very useful) to find non-linear and complex relationships among the covariates \(\mathbf{x}\) to predict \(Y\).
+  \item In order to fit a neural network model, you need a (better to be normalized or standardized) numeric matrix, so it requires a process called ‘one-hot encoding’ (see \url{https://www.geeksforgeeks.org/ml-one-hot-encoding/}).
+\end{itemize}
+\begin{lstlisting}[language=R]
+rawonehot_MEPS <- as.data.frame(model.matrix(OPDATEMM  ~.-1 , data=raw_MEPS[,4:12]))
+onehotnames    <- colnames(rawonehot_MEPS)
+colnames(rawonehot_MEPS) <- c(paste0("col", 1: (ncol(rawonehot_MEPS)-1)),
+                              onehotnames[ncol(rawonehot_MEPS)])
+rawonehot_MEPS_train <- rawonehot_MEPS[ randrows,]
+rawonehot_MEPS_test  <- rawonehot_MEPS[-randrows,]
+
+head(rawonehot_MEPS)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Neural network (cont.)}
+\begin{lstlisting}[style=output,basicstyle=\ttfamily\tiny\color{black!75}]
+  col1 col2 col3 col4 col5 col6 col7 col8 col9 col10 col11 col12 col13 col14
+1    0    0    1    0    0    0    0    0    0     0     0     0     0     0
+2    0    0    1    0    0    0    0    0    0     0     0     0     0     0
+3    0    0    1    0    0    0    0    0    0     0     0     0     0     0
+4    0    0    1    0    0    0    0    0    0     0     0     0     0     0
+5    0    0    1    0    0    0    0    0    0     0     0     0     0     0
+6    0    0    0    0    0    0    0    0    0     1     0     0     0     0
+...
+  col67 col68 col69 col70 col71 col72 col73 col74 col75 col76 col77 col78 col79
+1     0     1     0     0     0     0     1     0     0     0     1     0     0
+2     0     1     0     0     0     0     1     0     0     0     1     0     0
+3     0     1     0     0     0     0     1     0     0     0     1     0     0
+4     0     1     0     0     0     0     1     0     0     0     1     0     0
+5     0     1     0     0     0     0     1     0     0     0     1     0     0
+6     0     1     0     0     0     1     0     0     0     0     1     0     1
+  Total_Charge
+1      1209.00
+2      5912.30
+3      5912.30
+4       897.00
+5       990.57
+6      6407.50
+\end{lstlisting}
+\begin{itemize}
+  \item The categorical covariates become 79 dummy (0/1) columns \code{col1}--\code{col79}, followed by the response \code{Total\_Charge} (columns \code{col15}--\code{col66} omitted above).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Neural network (cont.)}
+\begin{lstlisting}[language=R]
+library(neuralnet)
+#fit.nn <- neuralnet(Total_Charge ~ ., rawonehot_MEPS_train,
+#                    hidden=c(5,3),linear.output = TRUE)
+# it takes MUCH MORE time to fit a neural network than a GLM, so I just
+# loaded the fitted neural network from a saved Rdata file.
+
+plot(fit.nn,rep = "best")
+\end{lstlisting}
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{ch04/neural_network_plot}
+\end{column}
+\begin{column}{0.46\textwidth}
+\begin{itemize}
+  \item Here is a plot for the fitted neural network with the MEPS data.
+  \item See Chapters 10.1--10.2 of the ISL textbook (\url{https://www.statlearning.com/}) for more explanations on neural networks.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Prediction performance}
+\begin{itemize}
+  \item Lastly, we compare the prediction performance of the four fitted models with the MEPS dataset as follows.
+\end{itemize}
+\begin{lstlisting}[language=R,basicstyle=\ttfamily\tiny]
+pred.glm  <- exp(predict(fit.glm, refined_MEPS_test))
+pred.tree <- predict(fit.tree, raw_MEPS_test)
+pred.rf   <- predict(fit.rf, raw_MEPS_test)
+pred.nn   <- compute(fit.nn, rawonehot_MEPS_test)$net.result
+
+valtable <- rbind(
+c(
+RMSE(pred.glm, raw_MEPS_test$Total_Charge) ,
+RMSE(pred.tree, raw_MEPS_test$Total_Charge),
+RMSE(pred.rf, raw_MEPS_test$Total_Charge),
+RMSE(pred.nn, raw_MEPS_test$Total_Charge)),
+c(
+  MAE(pred.glm, raw_MEPS_test$Total_Charge) ,
+  MAE(pred.tree, raw_MEPS_test$Total_Charge),
+  MAE(pred.rf, raw_MEPS_test$Total_Charge),
+  MAE(pred.nn, raw_MEPS_test$Total_Charge)))
+
+colnames(valtable) <- c("GLM", "CART", "RF", "NN")
+rownames(valtable) <- c("RMSE", "MAE")
+
+valtable
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+           GLM      CART        RF        NN
+RMSE 12053.085 12050.383 12063.034 12597.416
+MAE   3604.094  3597.488  3457.745  4073.573
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Prediction performance (cont.)}
+\begin{itemize}
+  \item As you can see, it is somewhat unclear which model would be the most preferred as RMSE and MAE provide different conclusions (RF is most favored with MAE, whereas GLM or CART is better with RMSE).
+  \item So in this case another judgement is needed based on the insight and preference of the modeler.
+  \item (Personally, I would prefer GLM as it has the best interpretability, better RMSE than RF, and comparable RMSE and MAE to the CART -- but it is my choice rather than a right answer.)
+\end{itemize}
+\end{frame}
