@@ -1,0 +1,263 @@
+%======================================================================
+\section{Introduction to R and RStudio}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{R Studio}
+\begin{itemize}
+  \item R and RStudio will need to be downloaded onto your computer:
+  \begin{itemize}
+    \item R: \url{https://mirror.las.iastate.edu/CRAN/}
+    \item RStudio: \href{https://rstudio.com/products/rstudio/download/\#download}{\texttt{https://rstudio.com/products/rstudio/download}}
+  \end{itemize}
+  \item RStudio desktop is freeware, while RStudio Server is licensed by companies to provide the same features for employees but connected to servers.
+  \item RStudio on your desktop uses the CPU and memory installed on your local machine.
+  \item When using RStudio Server, employees are actually doing the ‘work’ remotely -- RStudio is just an interface to the company’s server, where the code is being executed and computations being done.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{RStudio Tour}
+\begin{itemize}
+  \item SOURCE: \textit{the file editor, where you can write and edit files (such as R scripts)}
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.85\textwidth]{ch04/rstudio_tour_source}
+\end{center}
+\end{frame}
+
+\begin{frame}{RStudio Tour (cont.)}
+\begin{itemize}
+  \item CONSOLE: \textit{the command line, where you can do interactive programming}
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.85\textwidth]{ch04/rstudio_tour_console}
+\end{center}
+\end{frame}
+
+\begin{frame}{RStudio Tour (cont.)}
+\begin{itemize}
+  \item TERMINAL: \textit{employees can communicate with the company server via the RStudio Terminal -- not needed for this class}
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.85\textwidth]{ch04/rstudio_tour_terminal}
+\end{center}
+\end{frame}
+
+\begin{frame}{RStudio Tour (cont.)}
+\begin{itemize}
+  \item VIEWER: \textit{a file browser, plot viewer, package list, and documentation viewer}
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.85\textwidth]{ch04/rstudio_tour_viewer}
+\end{center}
+\end{frame}
+
+\begin{frame}{RStudio Tour (cont.)}
+\begin{itemize}
+  \item ENVIRONMENT: \textit{shows the objects loaded into memory (e.g.\ data, variables, \& functions)}
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.85\textwidth]{ch04/rstudio_tour_environment}
+\end{center}
+\end{frame}
+
+\begin{frame}{RStudio Setup}
+\begin{itemize}
+  \item Go to Tools $\to$ Global Options
+  \item It may be fun to setup your appearance:
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.55\textwidth]{ch04/rstudio_options_appearance}
+\end{center}
+\end{frame}
+
+\begin{frame}{Relative File References}
+\begin{itemize}
+  \item When writing your code, rather than writing out the long file paths each time we need to reference something, it may be helpful to have a starting place, so to speak.
+  \item A \code{working directory} allows you to set a root folder for all the file paths within your code.
+  \item For example, if you set your project folder as your working directory, then any code you write within the project will only need to be something like \code{functions/my\_function.R} instead of \code{C:/Users/ssaul/Desktop/Teaching/ACMA 231/Fall 2024/my\_function.R}.
+  \item This is called a \code{relative file reference}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Relative File References (cont.)}
+\begin{itemize}
+  \item When beginning a project, you can set your working directory by writing code like this:
+\end{itemize}
+\begin{lstlisting}[language=R]
+setwd("C:/Users/ssaul/Desktop/Teaching/ACMA 231")
+\end{lstlisting}
+\begin{itemize}
+  \item Or even better, you can create a \code{.Rproj}. This file allows you to do things like:
+\end{itemize}
+\begin{enumerate}
+  \item Save your workspace for quicker access to environment objects
+  \item Load your workspace and define a working directory on opening
+  \item More easily incorporate version control
+  \item Set file permissions for collaborators
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Relative File References: Creating a \texttt{.RProj} File}
+\begin{itemize}
+  \item Let’s practice creating a \code{.RProj} file:
+  \item \textit{Navigate to the folder where you are keeping your RISK 231 notes. Once inside, create a new folder called \code{Intro to R}. Once inside the new folder click on this icon in the top left corner of your RStudio:}
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.10\textwidth]{ch04/rstudio_new_project_icon}
+\end{center}
+\begin{itemize}
+  \item \textit{Select \code{Existing Directory} and enter the file path to your new folder.}
+  \item \textit{Click \code{Create Project} and your \code{.RProj} file will be created in the new folder!}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Relative File References: Switching Projects}
+\begin{itemize}
+  \item \textit{Not only is this handy for setting your working directory, but if you are working on several projects, you can easily close one and open another, setting it automatically as your new working directory by using the Project Dropdown feature in the top right corner of RStudio:}
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{ch04/rstudio_project_dropdown}
+\end{center}
+\end{frame}
+
+\begin{frame}{Main R File Types}
+\begin{itemize}
+  \item We already discussed \code{.Rproj} files and how useful they are\ldots
+  \item A \code{.R} file is a saved set of code which you can re-run at any time.
+  \item A \code{.Rmd} file is an RMarkdown, which is a simple formatting syntax for authoring HTML pages, PDF documents, presentations, and MS Word documents.
+  \begin{itemize}
+    \item RMarkdown is powerful because you can incorporate plain text/documentation, R code, and R code output all in one document.
+    \item In fact, the original HTML version of these lecture notes is a form of RMarkdown called Slidy.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Creating a .R (R Script)}
+\begin{itemize}
+  \item Let’s try it out!
+  \item \textit{Click on \code{File} in the top left of RStudio and select \code{New File}.}
+  \item \textit{You can see from the list that you can select a .R file (R Script), an RMarkdown file, and many others. Let’s create a .R file.}
+  \item \textit{After clicking on \code{R Script}, a new window should have opened in your Source window, labeled “Untitled”.}
+  \item \textit{Click the save button on the top left of the window and browse to your new folder and name the .R file “R\_Intro\_Script”.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Creating a .R (R Script) (cont.)}
+\begin{itemize}
+  \item Once your file is saved, type the following into the Source window:
+\end{itemize}
+\begin{columns}[T]
+\begin{column}{0.45\textwidth}
+\begin{lstlisting}[language=R]
+# Chunk 1
+2 + 1
+
+# Chunk 2
+21:50
+
+# Chunk 3
+a <- 2 + 1
+b <- 5 - 2
+c <- a + b
+\end{lstlisting}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{lstlisting}[language=R]
+# Chunk 4
+c
+print(c)
+
+# Chunk 5
+d <- "Hello World"
+class(d)
+
+# Chunk 6
+e <- TRUE
+class(e)
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Creating a .R (R Script): Run vs.\ Source}
+\begin{itemize}
+  \item Place your cursor at the top of the script and then click on the \code{Run} button at the top-right of the Source window\ldots or you can use \code{CTRL+Enter}.
+  \begin{itemize}
+    \item Notice that the \code{Run} button will run the code one chunk at a time. If you keep clicking it, it will move on to the next chunk and then the next.
+  \end{itemize}
+  \item Place your cursor at the top of the script and then click the \code{Source} button in the top right corner of the Source window\ldots or you can use \code{CTRL+Shift+Enter}.
+  \begin{itemize}
+    \item The \code{Source} button will run your entire script.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Creating a .R (R Script): What We Learned}
+We can learn a few things from the above code and its output:
+\begin{itemize}
+  \item We can comment in R by using the \code{\#} sign. This will allow us to include helpful documentation in our code without R trying to run it.
+  \item \code{:} includes all the numbers from a given number to another.
+  \item In R, we will use \code{<-} as assignment operator.
+  \begin{itemize}
+    \item \code{=} will produce the same result, but it is not recommended because it can be easily confused with \code{==} which is used for equalities and comparisons.
+    \item NOTE: The shortcut for \code{<-} is \code{Alt+minus}.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Creating a .R (R Script): What We Learned (cont.)}
+\begin{itemize}
+  \item We can display our assigned variables by either writing them alone on a line or by using the \code{print()} function, which will explicitly show the results in the console.
+  \item Notice in the Environment window that \code{a}, \code{b}, and \code{c} appear. These variables are now in your environment and can be used in later code.
+  \item If desired, you can clear your environment by clicking on the broom button:
+  \includegraphics[height=1.5em]{ch04/rstudio_broom_icon}
+  \item We can create character and boolean variables as well. You can use the \code{class()} function to check a variable's type.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Creating a .Rmd (RMarkdown)}
+\begin{itemize}
+  \item Let’s try it out!
+  \item \textit{Click on \code{File} in the top left of RStudio and select \code{New File}.}
+  \item \textit{Select \code{RMarkdown}. Usually, we want to create an HTML document, so we generally leave the defaults as-is, but RMarkdown has the ability to produce PDFs or Word docs. Leave it on HTML, title it any way you’d like, and click \code{OK}.}
+  \item \textit{After clicking on \code{OK}, a new window should have opened in your Source window, labeled “Untitled”.}
+  \item \textit{Click the save button on the top left of the window and browse to your new folder and name the .Rmd file “R\_Intro\_Markdown”.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Creating a .Rmd (RMarkdown) (cont.)}
+\begin{itemize}
+  \item Note that your new .Rmd file is not a blank document -- you get a very basic example RMarkdown file all filled out for you as a starting point!
+  \item We selected an HTML document. We can see what our RMarkdown looks like by pressing the \code{Knit} button in the top left corner of the Source window. Try it out.
+  \item Pretty cool, right? RMarkdown can display your notes, it can insert links, it can display and run code, it can show exhibits, and much more!
+  \item Notice in today’s folder that there is an HTML version of your RMarkdown in there. Every time you \code{Knit} an RMarkdown, it saves your .Rmd file and creates this HTML, which you can open directly.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Working in RMarkdown}
+\begin{itemize}
+  \item Find a helpful RMarkdown cheat sheet here:
+  \href{https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf}{RMarkdown Cheat Sheet}
+  \item Take a look at your \code{R\_Intro\_Markdown.Rmd} file. Let’s walk through some of the sections of the template:
+  \begin{itemize}
+    \item The top portion is called the “YAML Header”. There are A TON of things you can do with it to adjust the file with output specification, themes, adding table of contents, and so on.
+    \item The next section \textit{(lines 6--8)} is usually left alone.
+    \item In the text sections, you can write your documentation with all sorts of formatting possibilities. For example, you can create headers in your document using the \code{\#} command.
+    \item You can find WAY more formatting choices by looking at the cheat sheet.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Working in RMarkdown (cont.)}
+\begin{itemize}
+  \item The next section shows how you can embed R code right into your documentation and decide if it will run or not.
+  \begin{itemize}
+    \item The R code is placed between two sets of \lstinline|```| with the \lstinline|{r}| statement to start it off. This statement allows for many options for your R code.
+  \end{itemize}
+  \item \textit{On the second line within the R code section, replace \code{summary(cars)} with the code we used earlier (Chunks 1--6).}
+  \item \textit{After replacing the code chunk, go ahead and \code{Knit} your file. What happens?} Cool, right?
+  \item Finally, we can add exhibits, plots, and a plethora of great displays into our RMarkdowns.
+\end{itemize}
+\end{frame}
