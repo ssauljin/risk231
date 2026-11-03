@@ -1,0 +1,910 @@
+\documentclass{beamer}
+\usepackage{risk231}   % shared preamble: packages, theorems, colours, listings
+
+\setchapter{5}         % sections numbered 5.1, 5.2, ...
+
+\title{RISK 231: SQL}
+
+%----------------------------------------------------------------------
+% Local helpers for this chapter
+%----------------------------------------------------------------------
+\definecolor{joinfill}{RGB}{237,160,145}
+% circled step number for the SQL order of execution
+\newcommand{\stepnum}[1]{\tikz[baseline=(c.base)]\node[circle,draw,thick,inner sep=1pt,
+  minimum size=1.2em,font=\scriptsize\bfseries](c){#1};}
+% Venn diagram for a join: \joinvenn{title}{A-only fill}{overlap fill}{B-only fill}
+\newcommand{\joinvenn}[4]{%
+\begin{tikzpicture}[scale=0.7]
+  \fill[#2] (0,0) circle (1);
+  \fill[#4] (1.3,0) circle (1);
+  \begin{scope}\clip (0,0) circle (1); \fill[#3] (1.3,0) circle (1);\end{scope}
+  \draw (0,0) circle (1) (1.3,0) circle (1);
+  \node[font=\tiny] at (-0.4,0) {Table A};
+  \node[font=\tiny] at (1.7,0) {Table B};
+  \node[font=\footnotesize\bfseries] at (0.65,1.3) {#1};
+\end{tikzpicture}}
+
+\begin{document}
+\maketitle
+
+%======================================================================
+\section{Recap of Codecademy and Joins}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{Review: Manipulation}
+\begin{itemize}
+  \item \textbf{SQL} is a programming language designed to manipulate and manage data
+        stored in relational databases.
+  \begin{itemize}
+    \item A \textbf{relational database} is a database that organizes information into
+          one or more tables.
+    \item A \textbf{table} is a collection of data organized into rows and columns.
+  \end{itemize}
+\end{itemize}
+\vspace{0.5em}
+A \textbf{statement} is a string of characters that the database recognizes as a valid command.
+\begin{itemize}
+  \item \code{CREATE TABLE} creates a new table.
+  \item \code{INSERT INTO} adds a new row to a table.
+  \item \code{SELECT} queries data from a table.
+  \item \code{ALTER TABLE} changes an existing table.
+  \item \code{UPDATE} edits a row in a table.
+  \item \code{DELETE FROM} deletes rows from a table.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Review: Queries}
+\begin{itemize}
+  \item \code{SELECT} is the clause we use every time we want to query information from a database.
+  \item \code{AS} renames a column or table.
+  \item \code{DISTINCT} returns unique values.
+  \item \code{WHERE} is a popular command that lets you filter the results of the query
+        based on conditions that you specify.
+  \item \code{LIKE} and \code{BETWEEN} are special operators that work with numbers,
+        text, or date data types.
+  \item \code{AND} and \code{OR} combine multiple conditions.
+  \item \code{ORDER BY} sorts the result.
+  \item \code{LIMIT} specifies the maximum number of rows that the query will return.
+  \item \code{CASE} creates different outputs.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Review: Aggregate functions}
+\begin{itemize}
+  \item \code{COUNT()}: count the number of rows
+  \item \code{SUM()}: the sum of the values in a column
+  \item \code{MAX()} / \code{MIN()}: the largest/smallest value
+  \item \code{AVG()}: the average of the values in a column
+  \item \code{ROUND()}: round the values in the column
+\end{itemize}
+\vspace{0.5em}
+\textbf{Aggregate functions} combine multiple rows together to form a single value of
+more meaningful information.
+\begin{itemize}
+  \item \code{GROUP BY} is a clause used with aggregate functions to combine data from
+        one or more columns.
+  \item \code{HAVING} limits the results of a query based on an aggregate property.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Review: Multiple tables}
+\begin{itemize}\small
+  \item \code{JOIN} will combine rows from different tables if the join condition is true.
+  \item \code{LEFT JOIN} will return every row in the left table, and if the join condition
+        is not met, \code{NULL} values are used to fill in the columns from the right table.
+  \item \textbf{Primary key} is a column that serves as a unique identifier for the rows in the table.
+  \item \textbf{Foreign key} is a column that contains the primary key of another table.
+  \item \code{CROSS JOIN} lets us combine all rows of one table with all rows of another table.
+  \item \code{UNION} stacks one dataset on top of another.
+  \item \code{WITH} allows us to define one or more temporary tables that can be used in the final query.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Databases \& Schemas}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\begin{itemize}\small
+  \item \textbf{Database:} an organized collection of data.
+  \item \textbf{Schema:} the organization of rule sets that define the structure and
+        relationship of data within a database.
+  \item Within a database you may have multiple schemas; schemas can have multiple
+        \textbf{tables} (datasets of a particular type or for a particular purpose).
+  \item \textbf{Views} (\code{\_VW}) are easy ways to execute a commonly used query.
+\end{itemize}
+\end{column}
+\begin{column}{0.35\textwidth}
+\centering
+\includegraphics[width=0.85\textwidth]{ch05/filing_cabinets}
+\end{column}
+\end{columns}
+\vspace{0.3em}
+{\small\textit{For example:}}\par
+\centering
+\begin{tikzpicture}[font=\scriptsize\itshape, every node/.style={draw=blue!50!black,
+    text=blue!50!black, inner sep=2pt}, ->, >=Stealth, red!70!black]
+  \node[font=\footnotesize\bfseries\itshape, text width=1.5cm] (db) at (0,0) {Beatles Database};
+  \node[anchor=west] (j) at (2.2, 0.75) {John's Schema};
+  \node[anchor=west] (p) at (2.2, 0.25) {Paul's Schema};
+  \node[anchor=west] (r) at (2.2,-0.25) {Ringo's Schema};
+  \node[anchor=west] (g) at (2.2,-0.75) {George's Schema};
+  \foreach \s in {j,p,r,g} \draw (db.east) -- (\s.west);
+  \node[anchor=west, align=left, text width=3.6cm] (t) at (5.3,0.15)
+    {$\bullet$ Ticket\_to\_Ride\_Table\\ $\bullet$ Help\_Table\\ $\bullet$ Norwegian\_Wood\_Table\\
+     $\bullet$ I\_Am\_the\_Walrus\_Table\\[2pt] $\bullet$ Come\_Together\_VW};
+  \foreach \y in {0.85,0.55,0.25,-0.05,-0.4} \draw (j.east) -- (5.3,\y);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{SQL Editor}
+\centering
+\vfill
+{\large\color{blue!50!black}\textbf{Let's take a look at the SQL App}}
+\vfill
+\end{frame}
+
+\begin{frame}{SQL Order of Execution}
+Unlike some query languages, SQL does not execute its statements top-down; the clauses
+are executed in a particular order:
+\vspace{0.6em}
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}l l@{}}
+  \code{SELECT} \stepnum{5} \ \code{DISTINCT} \dots & \stepnum{6} \\
+  \code{FROM} \dots & \stepnum{1} \\
+  \code{JOIN} \dots\ \code{ON} \dots & \stepnum{1} \\
+  \code{WHERE} \dots & \stepnum{2} \\
+  \code{GROUP BY} \dots & \stepnum{3} \\
+  \code{HAVING} \dots & \stepnum{4} \\
+  \code{ORDER BY} \dots & \stepnum{7} \\
+  \code{LIMIT}/\code{TOP} {\scriptsize(PL/SQL: \code{WHERE ROWNUM <= \#})} \dots & \stepnum{8} \\
+  \code{;} &
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{SQL Commenting}
+Two ways to comment in SQL:
+\begin{itemize}
+  \item Double dashes at the front of the line: \lstinline[language=SQL]|-- comment|
+  \item Forward slash asterisk on each side of the comment: \lstinline[language=SQL]|/* comment */|
+\end{itemize}
+\vspace{0.5em}
+For example:
+\begin{lstlisting}[language=SQL]
+--Code to help look up some tables in the database
+
+SELECT * FROM IRIS   /*Special table*/
+ WHERE ID > 477156   /*Filters the data*/
+
+--Cool, right?
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{SQL Recap: Practice}
+Answer the following by writing SQL code in the SQL App:
+\begin{prob}
+\begin{enumerate}
+  \item Using the \code{COUNT()} function, determine how many rows are in the
+        \code{SCHEMA\_A.iris} table.
+  \item From the \code{SCHEMA\_A.mtcars} table, select all rows that are \underline{not}
+        \code{cyl} 6 and have an \code{hp} greater than or equal to 105.
+  \item Using the \code{SUM()} function, display the sum of \code{len} for each level of
+        \code{supp} in the \code{SCHEMA\_B.ToothGrowth} table.
+\end{enumerate}
+\end{prob}
+\end{frame}
+
+\begin{frame}[fragile]{SQL Recap: Practice -- \red{Answers}}
+\small
+1. Number of rows in the iris table: \red{\textbf{150}}
+\begin{lstlisting}[language=SQL]
+SELECT COUNT(*) FROM SCHEMA_A.IRIS
+\end{lstlisting}
+2. Rows of mtcars that are not \code{cyl} 6 and have \code{hp} $\ge$ 105:
+\begin{lstlisting}[language=SQL]
+SELECT * FROM SCHEMA_A.MTCARS
+WHERE CYL <> 6
+AND HP >= 105
+\end{lstlisting}
+3. Sum of \code{len} for each level of \code{supp}: \red{\textbf{OJ = 619.9 and VC = 508.9}}
+\begin{lstlisting}[language=SQL]
+SELECT SUPP, SUM(LEN) FROM SCHEMA_B.TOOTHGROWTH
+GROUP BY SUPP
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Table Management: Creating and Dropping Tables}
+\begin{itemize}
+  \item \code{CREATE TABLE} -- constructs a table in a given schema and database
+\end{itemize}
+\begin{lstlisting}[language=SQL]
+CREATE TABLE customers (customer_id number(10),
+                        customer_name varchar2(50),
+CONSTRAINT customers_pk PRIMARY KEY (customer_id));
+\end{lstlisting}
+\begin{itemize}
+  \item \code{CREATE TABLE AS} -- constructs a table from a query
+\end{itemize}
+\begin{lstlisting}[language=SQL]
+CREATE TABLE customers AS
+    (SELECT * FROM SCHEMA.TABLE)
+\end{lstlisting}
+\begin{itemize}
+  \item \code{DROP TABLE} -- removes a table in a given schema and database
+\end{itemize}
+\begin{lstlisting}[language=SQL]
+DROP TABLE customers;
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Table Management: Adding Columns and Rows}
+\begin{itemize}
+  \item \code{ALTER TABLE} -- add, modify, or drop/delete columns in a table
+\end{itemize}
+\begin{lstlisting}[language=SQL]
+ALTER TABLE customers ADD (city varchar2(40)
+                           DEFAULT 'Seattle');
+\end{lstlisting}
+\vspace{0.5em}
+\begin{itemize}
+  \item \code{INSERT INTO} -- insert a single record or multiple records into a table
+\end{itemize}
+\begin{lstlisting}[language=SQL]
+INSERT INTO customers
+(customer_id, customer_name)
+VALUES
+(123456, 'HUSKY');
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Table Management: Joining Tables}
+\centering\setlength{\tabcolsep}{2pt}
+\begin{tabular}{cccc}
+\joinvenn{Inner Join}{white}{joinfill}{white} &
+\joinvenn{Left Join}{joinfill}{joinfill}{white} &
+\joinvenn{Right Join}{white}{joinfill}{joinfill} &
+\joinvenn{Full Join}{joinfill}{joinfill}{joinfill} \\[2pt]
+\parbox[t]{0.22\textwidth}{\raggedright\scriptsize Select all records from Table A and Table B,
+  where the join condition is met.} &
+\parbox[t]{0.22\textwidth}{\raggedright\scriptsize Select all records from Table A, along with records
+  from Table B for which the join condition is met (if at all).} &
+\parbox[t]{0.22\textwidth}{\raggedright\scriptsize Select all records from Table B, along with records
+  from Table A for which the join condition is met (if at all).} &
+\parbox[t]{0.22\textwidth}{\raggedright\scriptsize Select all records from Table A and Table B,
+  regardless of whether the join condition is met or not.}
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Joining Tables: Example Data}
+Throughout the join examples we use the following two tables:
+\vspace{0.6em}
+\begin{center}
+{\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{tabular}[t]{@{}lccc@{}}
+\multicolumn{4}{@{}l}{\textbf{Students}}\\ \toprule
+Student\_Name & Grad\_Year & Class & Grade \\ \midrule
+Patrick & 9 & Lunch & A+ \\
+Sandy & 11 & Gym & A \\
+Gary & 9 & Civics & B+ \\
+Pearl & 12 & Calculus & B \\
+Karen & 12 & Calculus & C- \\
+Larry & 10 & Spelling & B \\
+Plankton & 11 & Gym & B- \\
+Squidward & 10 & Biology & A- \\
+Bob & 11 & Biology & B+ \\ \bottomrule
+\end{tabular}\hspace{2.5em}
+\begin{tabular}[t]{@{}ll@{}}
+\multicolumn{2}{@{}l}{\textbf{Teachers}}\\ \toprule
+Teacher\_Name & Class \\ \midrule
+N. Watterson & Calculus \\
+B. Joe & Gym \\
+T. Wilson & Spelling \\
+C. Krueger & Biology \\
+S. Small & Civics \\
+R. Robinson & Drama \\
+B. Parham & Band \\
+G. Watterson & Music Theory \\ \bottomrule
+\end{tabular}}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Joining Tables: \code{INNER JOIN}}
+\begin{columns}[c]
+\begin{column}{0.3\textwidth}\centering
+\joinvenn{Inner Join}{white}{joinfill}{white}
+\end{column}
+\begin{column}{0.65\textwidth}
+\begin{lstlisting}[language=SQL]
+SELECT
+    students.*,
+    teachers.Teacher_Name
+FROM students INNER JOIN teachers
+    ON students.Class = teachers.Class;
+\end{lstlisting}
+\end{column}
+\end{columns}
+\vspace{0.5em}
+\centering
+{\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcccl@{}}
+\multicolumn{5}{@{}l}{\textbf{Inner Join}}\\ \toprule
+Student\_Name & Grad\_Year & Class & Grade & Teacher\_Name \\ \midrule
+Sandy & 11 & Gym & A & B. Joe \\
+Gary & 9 & Civics & B+ & S. Small \\
+Pearl & 12 & Calculus & B & N. Watterson \\
+Karen & 12 & Calculus & C- & N. Watterson \\
+Larry & 10 & Spelling & B & T. Wilson \\
+Plankton & 11 & Gym & B- & B. Joe \\
+Squidward & 10 & Biology & A- & C. Krueger \\
+Bob & 11 & Biology & B+ & C. Krueger \\ \bottomrule
+\end{tabular}}
+\end{frame}
+
+\begin{frame}[fragile]{Joining Tables: \code{LEFT JOIN}}
+\begin{columns}[c]
+\begin{column}{0.3\textwidth}\centering
+\joinvenn{Left Join}{joinfill}{joinfill}{white}
+\end{column}
+\begin{column}{0.65\textwidth}
+\begin{lstlisting}[language=SQL]
+SELECT
+    students.*,
+    teachers.Teacher_Name
+FROM students LEFT JOIN teachers
+    ON students.Class = teachers.Class;
+\end{lstlisting}
+\end{column}
+\end{columns}
+\vspace{0.4em}
+\centering
+{\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcccl@{}}
+\multicolumn{5}{@{}l}{\textbf{Left Join}}\\ \toprule
+Student\_Name & Grad\_Year & Class & Grade & Teacher\_Name \\ \midrule
+Patrick & 9 & Lunch & A+ & \red{(blank)} \\
+Sandy & 11 & Gym & A & B. Joe \\
+Gary & 9 & Civics & B+ & S. Small \\
+Pearl & 12 & Calculus & B & N. Watterson \\
+Karen & 12 & Calculus & C- & N. Watterson \\
+Larry & 10 & Spelling & B & T. Wilson \\
+Plankton & 11 & Gym & B- & B. Joe \\
+Squidward & 10 & Biology & A- & C. Krueger \\
+Bob & 11 & Biology & B+ & C. Krueger \\ \bottomrule
+\end{tabular}}
+
+\vspace{0.3em}
+{\scriptsize\red{Note: there is no match in the Teachers table for Lunch.}}
+\end{frame}
+
+\begin{frame}[fragile]{Joining Tables: \code{FULL JOIN}}
+\begin{columns}[c]
+\begin{column}{0.3\textwidth}\centering
+\joinvenn{Full Join}{joinfill}{joinfill}{joinfill}
+\end{column}
+\begin{column}{0.65\textwidth}
+\begin{lstlisting}[language=SQL]
+SELECT
+    students.*,
+    teachers.*
+FROM students FULL JOIN teachers
+    ON students.Class = teachers.Class;
+\end{lstlisting}
+\end{column}
+\end{columns}
+\vspace{0.2em}
+\centering
+{\tiny\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccccc@{}}
+\multicolumn{6}{@{}l}{\textbf{Full Join}}\\ \toprule
+Student\_Name & Grad\_Year & Class & Grade & Teacher\_Name & \red{Class1} \\ \midrule
+Patrick & 9 & Lunch & A+ & & \\
+Sandy & 11 & Gym & A & B. Joe & Gym \\
+Gary & 9 & Civics & B+ & S. Small & Civics \\
+Pearl & 12 & Calculus & B & N. Watterson & Calculus \\
+Karen & 12 & Calculus & C- & N. Watterson & Calculus \\
+Larry & 10 & Spelling & B & T. Wilson & Spelling \\
+Plankton & 11 & Gym & B- & B. Joe & Gym \\
+Squidward & 10 & Biology & A- & C. Krueger & Biology \\
+Bob & 11 & Biology & B+ & C. Krueger & Biology \\
+ & & & & R. Robinson & Drama \\
+ & & & & B. Parham & Band \\
+ & & & & G. Watterson & Music Theory \\ \bottomrule
+\end{tabular}}
+
+\vspace{0.2em}
+{\scriptsize\red{Note: both tables have a \code{Class} column, so a new name is given in the
+joined table: \code{Class1}. Also, unmatched items are given blank values in the joined table.}}
+\end{frame}
+
+\begin{frame}{Table Management: Practice}
+\begin{prob}
+\begin{enumerate}
+  \item Using a \code{LEFT JOIN}, append \code{UrbanPop} and \code{Theft} from the
+        \code{SCHEMA\_C.USArrests} table to the \code{SCHEMA\_A.Iris} table using \code{ID}.
+  \vspace{0.5em}
+  \item Using an \code{INNER JOIN}, combine the \code{SCHEMA\_C.USArrests} and
+        \code{SCHEMA\_B.ToothGrowth} tables using \code{ID}.
+\end{enumerate}
+\end{prob}
+\end{frame}
+
+\begin{frame}[fragile]{Table Management: Practice -- \red{Answers}}
+\small
+1. Using a \code{LEFT JOIN}, append \code{UrbanPop} and \code{Theft} from
+\code{SCHEMA\_C.USArrests} to \code{SCHEMA\_A.Iris} using \code{ID}.
+\begin{lstlisting}[language=SQL]
+SELECT IRIS.*, USARRESTS.URBANPOP, USARRESTS.THEFT
+FROM SCHEMA_A.IRIS
+LEFT JOIN SCHEMA_C.USARRESTS
+    ON SCHEMA_A.IRIS.ID = SCHEMA_C.USARRESTS.ID
+\end{lstlisting}
+\vspace{0.4em}
+2. Using an \code{INNER JOIN}, combine \code{SCHEMA\_C.USArrests} and
+\code{SCHEMA\_B.ToothGrowth} using \code{ID}.
+\begin{lstlisting}[language=SQL]
+SELECT * FROM SCHEMA_C.USARRESTS
+INNER JOIN SCHEMA_B.TOOTHGROWTH
+    ON SCHEMA_C.USARRESTS.ID = SCHEMA_B.TOOTHGROWTH.ID
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Note: Three Ways to Write an \code{INNER JOIN}}
+In SQL, you can do an \textit{INNER JOIN} (answer \#2) in several ways:
+\begin{lstlisting}[language=SQL]
+SELECT * FROM SCHEMA_C.USARRESTS
+    INNER JOIN SCHEMA_B.TOOTHGROWTH
+    ON SCHEMA_C.USARRESTS.ID = SCHEMA_B.TOOTHGROWTH.ID
+\end{lstlisting}
+\textit{or}
+\begin{lstlisting}[language=SQL]
+SELECT * FROM SCHEMA_C.USARRESTS
+    JOIN SCHEMA_B.TOOTHGROWTH
+    ON SCHEMA_C.USARRESTS.ID = SCHEMA_B.TOOTHGROWTH.ID
+\end{lstlisting}
+\textit{or}
+\begin{lstlisting}[language=SQL]
+SELECT * FROM SCHEMA_C.USARRESTS,
+              SCHEMA_B.TOOTHGROWTH
+    WHERE SCHEMA_C.USARRESTS.ID = SCHEMA_B.TOOTHGROWTH.ID
+\end{lstlisting}
+\end{frame}
+
+%======================================================================
+\section{Aliasing and CASE WHEN Statements}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}[fragile]{Aliasing}
+\begin{itemize}
+  \item Reference tables or subqueries in code with a shortcut.
+  \item Aliases allow you to refer to tables multiple times in your code with a
+        shortcut, which gives you much cleaner code.
+\end{itemize}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textit{e.g.\ Instead of using}
+\begin{lstlisting}[language=SQL,basicstyle=\ttfamily\tiny]
+SELECT
+    students.*,
+    teachers.Teacher_Name
+FROM students LEFT JOIN teachers
+    ON students.Class = teachers.Class;
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textit{We can use}
+\begin{lstlisting}[language=SQL,basicstyle=\ttfamily\tiny]
+SELECT
+    s.*,
+    t.Teacher_Name
+FROM students s LEFT JOIN teachers t
+    ON s.Class = t.Class;
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Aliasing De-clutters Your Code}
+Aliasing can be \textbf{VERY} useful in de-cluttering your code!\\
+{\small\red{NOTE: Use abbreviations that tie back to your table names! Try not to use
+a, b, c, T1, T2, \dots\ to alias.}}
+
+\textit{e.g.\ Instead of using}
+\begin{lstlisting}[language=SQL,basicstyle=\ttfamily\tiny]
+SELECT FAKE_SCHEMA.EXAMPLE_DATA_VW.POL_NAME,
+FAKE_SCHEMA.EXAMPLE_DATA_VW.POL_EXPIRATION, FAKE_SCHEMA_TWO.EXAMPLE_DATA_TABLE.POL_NUMBER
+FROM FAKE_SCHEMA.EXAMPLE_DATA_VW LEFT JOIN FAKE_SCHEMA_TWO.EXAMPLE_DATA_TABLE ON
+FAKE_SCHEMA.EXAMPLE_DATA_VW.POL_KEY = FAKE_SCHEMA_TWO.EXAMPLE_DATA_TABLE.POL_KEY AND
+FAKE_SCHEMA.EXAMPLE_DATA_VW.NEW_RENEWAL_CODE = FAKE_SCHEMA_TWO.EXAMPLE_DATA_TABLE.NEW_RENEWAL_CODE
+\end{lstlisting}
+\textit{We can use}
+\begin{lstlisting}[language=SQL,basicstyle=\ttfamily\tiny]
+SELECT EDV.POL_NAME, EDV.POL_EXPIRATION, EDT.POL_NUMBER
+FROM FAKE_SCHEMA.EXAMPLE_DATA_VW EDV
+     LEFT JOIN FAKE_SCHEMA_TWO.EXAMPLE_DATA_TABLE EDT
+          ON EDV.POL_KEY = EDT.POL_KEY
+          AND EDV.NEW_RENEWAL_CODE = EDT.NEW_RENEWAL_CODE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Aliasing: Practice -- \textit{use aliasing!}}
+\begin{prob}\small
+\begin{enumerate}
+  \item Using a \code{LEFT JOIN}, append \code{weight} from the \code{SCHEMA\_B.PlantGrowth}
+        table to the \code{SCHEMA\_A.mtcars} table using \code{ID} and \code{color\_ID},
+        selecting \code{Name}, \code{mpg}, \code{cyl}, and \code{wt} from the \code{mtcars} table.
+        Also, create a new column called \code{weight\_diff} that gives the difference of the
+        \code{weight} column and the \code{wt} column.
+  \vspace{0.5em}
+  \item Using \code{INNER JOIN}, combine the \code{SCHEMA\_A.Iris}, \code{SCHEMA\_B.PlantGrowth},
+        and \code{SCHEMA\_C.USArrests} tables using \code{ID} for \code{iris} and
+        \code{PlantGrowth}, and \code{State} for \code{iris} and \code{USArrests}.
+        Select all of the data in the \code{iris} table, the \code{weight} column from the
+        \code{PlantGrowth} table, and the \code{Murder}, \code{State}, and \code{Assault}
+        columns from the \code{USArrests} table.
+\end{enumerate}
+\end{prob}
+\end{frame}
+
+\begin{frame}[fragile]{Aliasing: Practice -- \red{Answers} (1)}
+{\small 1. \code{LEFT JOIN} \code{weight} from \code{SCHEMA\_B.PlantGrowth} onto
+\code{SCHEMA\_A.mtcars} (\code{color\_ID} $\leftrightarrow$ \code{ID}), selecting \code{Name},
+\code{mpg}, \code{cyl}, \code{wt}, and the new column \code{weight\_diff} = \code{weight} $-$ \code{wt}.}
+\begin{lstlisting}[language=SQL]
+SELECT
+    M.NAME,
+    M.MPG,
+    M.CYL,
+    M.WT,
+    P.WEIGHT,
+    (P.WEIGHT - M.WT) AS WEIGHT_DIFF
+FROM SCHEMA_A.MTCARS M
+        LEFT JOIN SCHEMA_B.PLANTGROWTH P
+            ON M.COLOR_ID = P.ID
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Aliasing: Practice -- \red{Answers} (2)}
+{\small 2. \code{INNER JOIN} of \code{SCHEMA\_A.Iris}, \code{SCHEMA\_B.PlantGrowth} (on \code{ID})
+and \code{SCHEMA\_C.USArrests} (on \code{State}): all of \code{iris}, \code{weight} from
+\code{PlantGrowth}, and \code{Murder}, \code{State}, \code{Assault} from \code{USArrests}.}
+\begin{lstlisting}[language=SQL]
+SELECT
+    I.*,
+    P.WEIGHT,
+    U.MURDER,
+    U.STATE,
+    U.ASSAULT
+FROM SCHEMA_A.IRIS I,
+     SCHEMA_B.PLANTGROWTH P,
+     SCHEMA_C.USARRESTS U
+WHERE I.ID = P.ID AND I.STATE = U.STATE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{String Handling (1)}
+\begin{itemize}\small
+  \item \lstinline[language=SQL]|SUBSTR(x, start [, length]);|
+  \begin{itemize}
+    \item Returns a substring of \code{x} that begins at the position specified by \code{start}.
+          An optional \code{length} for the substring may be supplied.
+    \item \code{start} can be negative to count from the end of the string.
+  \end{itemize}
+  {\scriptsize
+  \begin{tabular}{@{}ll@{}}
+    \textcolor{gray}{\textit{policy=88UECAB4758}} & \code{SUBSTR(policy,6,6)} = \textcolor{gray}{\textit{AB4758}} \\
+    \textcolor{gray}{\textit{policy=88UECAB4758}} & \code{SUBSTR(policy,-4)} = \textcolor{gray}{\textit{4758}}
+  \end{tabular}}
+  \item \lstinline[language=SQL]|CONCAT(x, y);|
+  \begin{itemize}
+    \item Concatenates the strings \code{x} and \code{y} and returns the appended string.
+    \item You can also use \code{||} to concatenate strings.
+  \end{itemize}
+  {\scriptsize
+  \begin{tabular}{@{}ll@{}}
+    \textcolor{gray}{\textit{pol\_sym=UEC}} & \code{CONCAT(pol\_sym,pol\_num)} = \textcolor{gray}{\textit{UECAB4758}} \quad \textit{or} \\
+    \textcolor{gray}{\textit{pol\_num=AB4758}} & \code{(pol\_sym || pol\_num)} = \textcolor{gray}{\textit{UECAB4758}}
+  \end{tabular}}
+  \item \lstinline[language=SQL]|LENGTH(x);|
+  \begin{itemize}
+    \item Returns the number of characters in \code{x}.
+  \end{itemize}
+  {\scriptsize
+  \begin{tabular}{@{}ll@{}}
+    \textcolor{gray}{\textit{policy=88UECAB4758}} & \code{LENGTH(policy)} = \textcolor{gray}{\textit{11}}
+  \end{tabular}}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{String Handling (2)}
+\begin{itemize}
+  \item \lstinline[language=SQL]|NVL(x, value);|
+  \begin{itemize}
+    \item Returns \code{value} if \code{x} is null; otherwise, \code{x} is returned.
+          \quad e.g.\ \code{NVL(prem,0)}
+  \end{itemize}
+  \vspace{0.4em}
+  \item \lstinline[language=SQL]|LTRIM(x [, trim_string]);| / \lstinline[language=SQL]|RTRIM(x [, trim_string]);|
+  \begin{itemize}
+    \item Trims characters from the left or right of \code{x}
+          (by default, leading/trailing spaces).
+  \end{itemize}
+  \vspace{0.4em}
+  \item \lstinline[language=SQL]|CHARINDEX(x, search_string);|
+  \begin{itemize}
+    \item Searches \code{x} for \code{search\_string} and returns the position.
+  \end{itemize}
+  \vspace{0.4em}
+  \item \lstinline[language=SQL]|REPLACE(x, search_string, replace_string);|
+  \begin{itemize}
+    \item Searches \code{x} for \code{search\_string} and replaces it with \code{replace\_string}.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{String Handling: Practice}
+\begin{prob}
+Write a query that extracts two columns from the \code{SCHEMA\_A.mtcars} table, which
+decomposes the \code{Name} into two parts (separated by the first space): \code{Brand}
+and \code{Model}.
+\end{prob}
+\vspace{0.5em}
+\begin{prob}
+Write a query that extracts the accident year, month, and day from \code{acc\_dt} of the
+\code{SCHEMA\_D.lossexpense} table. Further, create a column with date format using the
+extracted information.
+\end{prob}
+\vspace{0.5em}
+\begin{prob}
+Using a \code{LEFT JOIN}, append all columns from the \code{SCHEMA\_D.premexposures}
+table to the \code{SCHEMA\_D.lossexpense} table using \code{pol\_id}. Note that
+\code{pol\_id} can be obtained in the \code{SCHEMA\_D.lossexpense} table by concatenating
+\code{pol\_regsym} and \code{pol\_num}.
+\end{prob}
+\end{frame}
+
+\begin{frame}[fragile]{String Handling: Practice -- \red{Answers}}
+{\small Split \code{Name} of \code{mtcars} into \code{Brand} and \code{Model}:}
+\begin{lstlisting}[language=SQL]
+SELECT mtcars.Name,
+    SUBSTR(mtcars.Name, 1, CHARINDEX(' ', mtcars.Name)-1) AS Brand,
+    SUBSTR(mtcars.Name, CHARINDEX(' ', mtcars.Name),
+           LENGTH(mtcars.Name)) AS Model
+FROM mtcars;
+\end{lstlisting}
+\vspace{0.3em}
+{\small Extract accident year, month, and day from \code{acc\_dt} (format \code{m/d/yyyy}):}
+\begin{lstlisting}[language=SQL]
+SELECT le.acc_dt,
+    SUBSTR(le.acc_dt, -4) AS year,
+    SUBSTR(le.acc_dt, 1, CHARINDEX('/', le.acc_dt)-1) AS month,
+    SUBSTR(SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1), 1,
+           CHARINDEX('/', SUBSTR(le.acc_dt, CHARINDEX('/', le.acc_dt)+1))-1) AS day
+FROM Schema_D.lossexpense le;
+\end{lstlisting}
+\vspace{0.3em}
+{\small Append \code{premexposures} to \code{lossexpense} via the concatenated \code{pol\_id}:}
+\begin{lstlisting}[language=SQL]
+SELECT le.*, pe.*
+FROM SCHEMA_D.lossexpense le LEFT JOIN SCHEMA_D.premexposures pe
+    ON CONCAT(le.pol_regsym, le.pol_num) = pe.pol_id;
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{\code{CASE} Statement}
+\begin{itemize}
+  \item Effectively an IF-ELSE statement.
+  \item \code{CASE} looks for the first match; once it meets this match, it performs the
+        \code{THEN} and goes to the next row of the data.
+\end{itemize}
+\begin{lstlisting}[language=SQL]
+SELECT c.*,
+       CASE
+          WHEN c.city = 'Seattle' THEN 'Northwest'
+          WHEN c.city = 'Orlando' THEN 'Southeast'
+          ELSE 'Merica'
+       END AS REGION
+  FROM customers c
+\end{lstlisting}
+{\small\color{red!70!black}
+\begin{itemize}
+  \item Use an \code{ELSE} statement when you want the remaining circumstances to be
+        something other than blank.
+  \item Don't forget the \code{END} statement!
+  \item \code{AS REGION} names the column being created.
+\end{itemize}}
+\end{frame}
+
+\begin{frame}[fragile]{\code{CASE} Statement: Practice}
+\begin{prob}\small
+Write a query that creates an additional column in the \code{SCHEMA\_C.USArrests} table
+using a \code{CASE} statement to give unique codes based on the values in the \code{Murder}
+column. For example, if the \code{Murder} rate is greater than 10, the new column could be
+`15+' or `High' or `Terrifying!'.
+\end{prob}
+\pause
+\textbf{\red{Answer:}}
+\begin{lstlisting}[language=SQL]
+SELECT
+    U.*,
+    CASE WHEN U.MURDER > 15 THEN 'AHHHHH!!!!'
+         WHEN U.MURDER > 10 THEN 'SCARY AT NIGHT!'
+         WHEN U.MURDER > 5 THEN 'JUST BE CAREFUL'
+         ELSE 'PEACE, LOVE, AND HAPPINESS'
+    END AS MURDER_CODE
+FROM SCHEMA_C.USARRESTS U
+\end{lstlisting}
+\end{frame}
+
+%======================================================================
+\section{Nested Queries and WITH Statements}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}[fragile]{Subqueries: Motivation}
+\begin{itemize}\small
+  \item Oftentimes, you will need more than one table in more than one step to get what you need.
+  \item What if you want to accomplish this without creating multiple tables in the
+        database? Or\dots what if you want to accomplish this without creating mid-step tables?
+\end{itemize}
+For example:
+\begin{lstlisting}[language=SQL]
+CREATE TABLE Average_Age AS
+SELECT
+    AVG(AGE) AS AvAge
+FROM SCHEMA.TABLE;
+
+CREATE TABLE Greater_than_Average AS
+SELECT
+    NAMES
+FROM SCHEMA.TABLE nm, Average_Age aa
+WHERE nm.AGE > aa.AvAge;
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Subquery}
+\begin{itemize}
+  \item SQL query nested in a larger query
+  \begin{itemize}
+    \item Can be added to the \textit{WHERE}, \textit{SELECT}, and \textit{FROM} clauses
+    \item Can be run on their own to produce results, often single or multiple values
+  \end{itemize}
+  \item Queries with subqueries execute from the innermost query outward
+  \item Multiple nested subqueries are possible
+\end{itemize}
+\vspace{0.5em}
+\centering
+\begin{tikzpicture}
+  \node[draw=dorange, very thick, rounded corners, inner sep=4pt] (outer) {%
+    \begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[language=SQL,frame=none,backgroundcolor={}]
+SELECT NAMES
+  FROM SCHEMA.TABLE
+  WHERE AGE > (SELECT AVG(AGE) FROM SCHEMA.TABLE);
+\end{lstlisting}
+    \end{minipage}};
+  \node[font=\small\bfseries, text=dorange, below left=0.35cm and 0.6cm of outer.south] (lo) {Outer Query};
+  \node[font=\small\bfseries, text=dgreen, below right=0.35cm and -0.6cm of outer.south] (li) {Inner Query};
+  \draw[->, dorange, thick] (lo.north) -- ++(0.5,0.35);
+  \draw[->, dgreen, thick] (li.north) -- ++(0.3,0.75);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]{Subquery: Practice}
+\begin{prob}
+Using a subquery, return all rows from the \code{iris} table with \code{ID}s the same as
+the \code{color\_ID}s associated with Mercedes found in the \code{mtcars} table.
+\textit{HINT: the wildcard character in SQL is \%.}
+\end{prob}
+\pause
+\vspace{0.5em}
+\textbf{\red{Answer:}}
+\begin{lstlisting}[language=SQL]
+SELECT * FROM IRIS
+    WHERE ID IN (SELECT COLOR_ID FROM MTCARS
+                     WHERE NAME LIKE 'Merc%')
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Subquery: Scoping Considerations}
+\begin{itemize}\small
+  \item Be mindful of the order of operations; the \underline{scope} of any query is
+        contained in the \textbf{\textit{FROM}} clause.
+  \item Any subquery in the \textit{WHERE} clause of an outer query will return values
+        and not a table that can be selected from.
+\end{itemize}
+\textit{For example:} \red{\small\textit{we cannot pull \code{AVG\_AGE} in the outer query
+from this inner query}} \textcolor{red}{$\times$}
+\begin{lstlisting}[language=SQL]
+SELECT NAMES, AVG_AGE
+FROM SCHEMA.TABLE
+WHERE AGE > (SELECT AVG(AGE) AS AVG_AGE FROM SCHEMA.TABLE);
+\end{lstlisting}
+\red{\small\textit{This code will work correctly}} \textcolor{dgreen}{$\checkmark$}
+\begin{lstlisting}[language=SQL]
+SELECT sch.NAMES, iq.AVG_AGE
+FROM SCHEMA.TABLE sch,
+     (SELECT AVG(AGE) AS AVG_AGE FROM SCHEMA.TABLE) iq
+WHERE sch.AGE > iq.AVG_AGE;
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Subquery: \code{WITH}}
+\begin{itemize}\small
+  \item Special subquery that generates a table to be used within a larger query.
+  \item Very useful for organizing complex queries (\textbf{MUCH} easier to read than nested
+        queries, particularly when there are multiple subqueries!)
+\end{itemize}
+\textit{For example:}
+\begin{lstlisting}[language=SQL]
+WITH temp AS (SELECT AVG(AGE) AS AVG_AGE FROM SCHEMA.TABLE)
+SELECT sch.NAMES, iq.AVG_AGE
+FROM SCHEMA.TABLE sch, temp iq
+WHERE sch.AGE > iq.AVG_AGE;
+\end{lstlisting}
+\begin{lstlisting}[language=SQL]
+SELECT sch.NAMES, iq.AVG_AGE
+FROM SCHEMA.TABLE sch,
+     (SELECT AVG(AGE) AS AVG_AGE FROM SCHEMA.TABLE) iq
+WHERE sch.AGE > iq.AVG_AGE;
+\end{lstlisting}
+\red{\small\textit{Both result in the same output, but the top one is easier to read.}}
+\end{frame}
+
+\begin{frame}[fragile]{\code{WITH}: Practice}
+\begin{prob}
+Using a \code{WITH} statement, return all rows from the \code{iris} table with \code{ID}s
+the same as the \code{color\_ID}s associated with Mercedes found in the \code{mtcars} table.
+\textit{HINT: the wildcard character in SQL is \%.}
+\end{prob}
+\pause
+\vspace{0.5em}
+\textbf{\red{Answer:}}
+\begin{lstlisting}[language=SQL]
+WITH TEMP AS
+(SELECT COLOR_ID FROM MTCARS
+        WHERE NAME LIKE 'Merc%')
+SELECT I.* FROM IRIS I, TEMP T
+    WHERE I.ID = T.COLOR_ID
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Subquery and \code{WITH}: Practice}
+\begin{prob}
+Return all rows from the \code{ToothGrowth} table along with the \code{Murder} column from
+the \code{USArrests} table for urban populations greater than 80.
+
+\vspace{0.5em}
+Do this using a subquery, and again using a \code{WITH} statement.
+\end{prob}
+\end{frame}
+
+\begin{frame}[fragile]{Subquery and \code{WITH}: Practice -- \red{Answers}}
+\textbf{Using a subquery:}
+\begin{lstlisting}[language=SQL]
+SELECT
+    T.*, P.MURDER
+FROM TOOTHGROWTH T
+INNER JOIN (SELECT U.*
+            FROM USARRESTS U
+            WHERE U.URBANPOP > 80) P
+    ON T.ID = P.ID
+\end{lstlisting}
+\vspace{0.3em}
+\textbf{Using a \code{WITH} statement:}
+\begin{lstlisting}[language=SQL]
+WITH POP AS (SELECT U.*
+             FROM USARRESTS U WHERE U.URBANPOP > 80)
+SELECT
+    T.*, P.MURDER
+FROM TOOTHGROWTH T
+INNER JOIN POP P
+    ON T.ID = P.ID
+\end{lstlisting}
+\end{frame}
+
+\end{document}
