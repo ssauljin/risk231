@@ -1,10 +1,13 @@
-% risk201.sty -- shared style for the RISK 201 Beamer lecture notes
+% risk231.sty -- shared style for the RISK 231 Beamer lecture notes
 %
 % Usage in a chapter file:
 %   \documentclass{beamer}
-%   \usepackage{risk201}
+%   \usepackage{risk231}
 %   \setchapter{4}                  % sections numbered 4.1, 4.2, ...
-%   \title{RISK 201: <Chapter name>}
+%   \title{RISK 231: <Chapter name>}
+%
+% Figures live in figures/chNN/ and are included as
+%   \includegraphics{chNN/<file>}   (see \graphicspath below)
 %
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{risk231}[2026/11/03 RISK 231 lecture slides]
@@ -32,8 +35,13 @@
 \RequirePackage{graphicx}
 \RequirePackage{bbm, dsfont}
 \RequirePackage{actuarialangle}   % annuity symbols: a_{\angl{n}i}
+\RequirePackage{framed}           % snugshade, used by the Shaded environment
+\RequirePackage{listings}         % code blocks (VBA, R, SQL); frames need [fragile]
 
-\usetikzlibrary{arrows,shapes,calc,positioning}
+\usetikzlibrary{arrows,arrows.meta,shapes,shapes.arrows,shapes.callouts,calc,positioning,fit}
+
+\graphicspath{{figures/}}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=.}
 
 %----------------------------------------------------------------------
 % Theorem-like environments (from Slides_sample.TEX)
@@ -46,10 +54,11 @@
 %
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}[section]
-\newtheorem{remk}{Definition}[section]
+\newtheorem{remk}{Remark}[section]
 \newtheorem{exam}{Example}[section]
 \newtheorem{prob}{Exercise}[section]
 \newtheorem{solu2}{Solution}[section]
+\definecolor{shadecolor}{gray}{0.92}
 \newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
 
 %----------------------------------------------------------------------
@@ -61,6 +70,13 @@
 
 % \setchapter{N}: number sections N.1, N.2, ...
 \newcommand{\setchapter}[1]{\renewcommand{\thesection}{#1.\arabic{section}}}
+
+% \sectionframe: a divider slide showing the current \section title
+\setbeamertemplate{section page}{%
+  \centering\vfill
+  {\usebeamerfont{title}\usebeamercolor[fg]{title}\insertsectionhead\par}%
+  \vfill}
+\newcommand{\sectionframe}{\begin{frame}[plain,noframenumbering]\sectionpage\end{frame}}
 
 %----------------------------------------------------------------------
 % Math operators
@@ -151,6 +167,35 @@
     }
   \end{tikzpicture}%
 }
+
+%----------------------------------------------------------------------
+% Code listings (Excel formulas, VBA, R, SQL)
+%----------------------------------------------------------------------
+% Usage (the frame must be [fragile]):
+%   \begin{lstlisting}[language=VBA] ... \end{lstlisting}
+%   languages: VBA, R, SQL;  output/console text: style=output
+%   inline: \code{SUM(A1:A10)}  or  \lstinline[language=R]|x <- 1|
+\lstdefinelanguage{VBA}[Visual]{Basic}{%
+  morekeywords={Sub,Function,Dim,As,Set,Range,Cells,Worksheets,Workbooks,
+    ActiveSheet,ActiveCell,Selection,Application,MsgBox,InputBox,Integer,Long,
+    Double,String,Boolean,Variant,Object,ElseIf,Each,Exit,With,Option,Explicit,
+    Private,Public,Const,ByVal,ByRef,Do,Loop,Until,While,Wend,Select,Case},
+  sensitive=false}
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{dgreen}\itshape,
+  stringstyle=\color{purple},
+  columns=fullflexible, keepspaces=true,
+  breaklines=true, showstringspaces=false,
+  frame=single, rulecolor=\color{black!25},
+  backgroundcolor=\color{black!3},
+  xleftmargin=2pt, xrightmargin=2pt, aboveskip=4pt, belowskip=4pt,
+  upquote=true}
+\lstdefinestyle{output}{basicstyle=\ttfamily\scriptsize\color{black!75},
+  backgroundcolor=\color{white}, frame=leftline, keywordstyle={},
+  commentstyle={}, stringstyle={}}
+\newcommand{\code}[1]{\texttt{\color{blue!50!black}#1}}
 
 % Blank space for fill-in rows such as "F = ...  C = ..."
 \newcommand{\blank}{\hspace{1.2cm}}
