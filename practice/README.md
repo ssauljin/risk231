@@ -123,3 +123,5 @@ Tasks:
 3. Write one macro that asks for gender, class, funding pattern, and a low and high issue age with `InputBox`. For each age, it should run Goal Seek so the account value at age 99 is $1, then paste the premium and max-AV results into the matching table. Attach it to **Get Premiums** and fill in all 12 tables (issue ages 18–70).
 
 Skills: Ch. 2 (named ranges, `IF`, Goal Seek) and Ch. 3 §3.2–3.3 (`InputBox`, variables, `If`, loops, selecting sheets).
+
+### CHALLENGE: Can you write R codes that performs the same function as the xlsm file in Project 2 (i.e., via VBA)? It is a great exercise to make you familiar with the VBA, and help to try to overcome the limitation of VBA (extremely slow...)
