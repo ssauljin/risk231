@@ -1,0 +1,960 @@
+%======================================================================
+\section{Variables, Vectors, Matrices, and Lists}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}[fragile]{Operators \& Operator-like Functions}
+\begin{itemize}
+  \item \textbf{Variable Assignment} : The preferred method is using \code{<-} but \code{=} also works \textit{(Note: When you are in the R Coding environment, you can type \code{Alt + -} to enter \code{<-})}
+\end{itemize}
+\begin{lstlisting}[language=R]
+x <- 5
+y = 11
+\end{lstlisting}
+\begin{itemize}
+  \item \textbf{Arithmetic Operators} : \code{+ - / *}
+\end{itemize}
+\begin{lstlisting}[language=R]
+x + y 
+x / y
+x * y
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 16
+[1] 0.4545455
+[1] 55
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Operators \& Operator-like Functions (cont.)}
+\begin{itemize}
+  \item \textbf{Sequences} : Use \code{:} to create a sequence of numbers.
+  \item \textbf{Equality Comparison} : use \code{==} to test whether items are equal.
+  \item \textbf{Inequality Comparison} : Use \code{< > <= >=} to test inequalities.
+  \item \textbf{Negation} : Use \code{!} to negate a logical TRUE / FALSE value
+\end{itemize}
+\begin{lstlisting}[language=R]
+1:10
+5 == 6
+5 <= 6
+5 != 6
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1]  1  2  3  4  5  6  7  8  9 10
+[1] FALSE
+[1] TRUE
+[1] TRUE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Operators \& Operator-like Functions (cont.)}
+\begin{itemize}
+  \item \textbf{AND} : Use \code{\&}
+  \item \textbf{OR} : Use \code{|}
+  \item \textbf{To see if an element is contained in a vector/list} : Use \code{\%in\%}
+  \item \textbf{TRUE/FALSE reserved words} : \code{TRUE, FALSE, T, F}
+\end{itemize}
+\begin{lstlisting}[language=R]
+(5 == 5) & (4 < 3)
+(5 == 5) | (4 < 3)
+2 %in% 1:3
+TRUE == T
+FALSE == F
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] FALSE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Operators \& Operator-like Functions}
+\framesubtitle{Practice}
+\begin{itemize}
+  \item Do the following:
+\end{itemize}
+\begin{enumerate}
+  \item Assign the following variables: 14 to a, 122 to b, 201 to c, and 5 to e.
+\end{enumerate}
+\begin{lstlisting}[language=R]
+a <- 14
+b <- 122
+c <- 201
+e <- 5
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{1}
+  \item Assign the sum of a, b, and c to d
+\end{enumerate}
+\begin{lstlisting}[language=R]
+d <- a + b + c
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{2}
+  \item Assign the product of b times c to f
+\end{enumerate}
+\begin{lstlisting}[language=R]
+f <- b * c
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Operators \& Operator-like Functions (cont.)}
+\framesubtitle{Practice}
+\begin{enumerate}\setcounter{enumi}{3}
+  \item Assign the sequence of numbers from 5 to 10 to g
+\end{enumerate}
+\begin{lstlisting}[language=R]
+g <- 5:10
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{4}
+  \item Determine which values in g are equal to 6
+\end{enumerate}
+\begin{lstlisting}[language=R]
+g == 6
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] FALSE  TRUE FALSE FALSE FALSE FALSE
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{5}
+  \item Assign the sequence of numbers from 7 to 8 to h
+\end{enumerate}
+\begin{lstlisting}[language=R]
+h <- 7:8
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Operators \& Operator-like Functions (cont.)}
+\framesubtitle{Practice}
+\begin{enumerate}\setcounter{enumi}{6}
+  \item Determine which values in g are greater than h
+\end{enumerate}
+\begin{lstlisting}[language=R]
+g > h
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] FALSE FALSE FALSE FALSE  TRUE  TRUE
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{7}
+  \item Negate the results of Q5
+\end{enumerate}
+\begin{lstlisting}[language=R]
+g != 6
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1]  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{8}
+  \item Negate the results of Q7
+\end{enumerate}
+\begin{lstlisting}[language=R]
+!(g > h)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1]  TRUE  TRUE  TRUE  TRUE FALSE FALSE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Operators \& Operator-like Functions (cont.)}
+\framesubtitle{Practice}
+\begin{enumerate}\setcounter{enumi}{9}
+  \item Is a less than b and is b less than c?
+\end{enumerate}
+\begin{lstlisting}[language=R]
+a < b & b < c
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] TRUE
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{10}
+  \item Is a greater than d or f?
+\end{enumerate}
+\begin{lstlisting}[language=R]
+a > d | a > f
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] FALSE
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{11}
+  \item Is 5 in a,b,c,d,e, or f?
+\end{enumerate}
+\begin{lstlisting}[language=R]
+5 %in% c(a,b,c,d,e,f)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] TRUE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{R Classes}
+\begin{itemize}
+  \item There are 4 R classes:
+\end{itemize}
+\begin{enumerate}
+  \item \textbf{Vector} \textit{-- a one-dimensional data structure, where the elements are all of the same type}
+  \item \textbf{Matrix} \textit{-- a two-dimensional table of vectors, where the elements are all of the same type}
+  \item \textbf{List} \textit{-- a one-dimensional vector that can contain objects of different types}
+  \item \textbf{Dataframe} \textit{-- a two-dimensional table of vectors, that can contain data of different types}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors}
+\begin{itemize}
+  \item \textit{A one-dimensional data structure, where the elements are all of the same type}
+\end{itemize}
+\textbf{There are 3 main ways to create a vector:}\par\smallskip
+\begin{itemize}
+  \item First, you could use \code{c()} function (c stands for “combine”):
+\end{itemize}
+\begin{lstlisting}[language=R]
+v1 <- c(1, 2, 3, 4, 5)
+v2 <- c("a", "b", "c")
+
+# Not recommended
+v3 <- c(1, "a")
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+v1
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 2 3 4 5
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+v2
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "a" "b" "c"
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors (cont.)}
+\begin{lstlisting}[language=R]
+v3
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "1" "a"
+\end{lstlisting}
+\begin{itemize}
+  \item Second, you could use \code{seq(from, to, by)}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+v4 <- seq(1, 10, 2)
+v5 <- seq(0, 1, 0.25)
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+v4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 3 5 7 9
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+v5
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 0.00 0.25 0.50 0.75 1.00
+\end{lstlisting}
+\end{column}
+\end{columns}
+\begin{itemize}
+  \item Third, you could use \code{rep(elements, times)} to create a vector of repeated elements:
+\end{itemize}
+\begin{lstlisting}[language=R]
+awesome <- rep("Boom", 4)
+awesomer <- rep(c("three", "blind", "mice"), 2)
+awesomest <- c(rep(NA,16),"Batman!")
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors (cont.)}
+\begin{lstlisting}[language=R]
+awesome
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "Boom" "Boom" "Boom" "Boom"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+awesomer
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "three" "blind" "mice"  "three" "blind" "mice"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+awesomest
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1] NA        NA        NA        NA        NA        NA        NA       
+ [8] NA        NA        NA        NA        NA        NA        NA       
+[15] NA        NA        "Batman!"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors}
+\begin{itemize}
+  \item \code{is.vector()} returns TRUE if an object is a vector:
+\end{itemize}
+\begin{lstlisting}[language=R]
+is.vector(v5)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] TRUE
+\end{lstlisting}
+\begin{itemize}
+  \item Use the \code{length()} function to obtain the length of a vector:
+\end{itemize}
+\begin{lstlisting}[language=R]
+length(v1)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+length(v2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 3
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors (cont.)}
+\begin{itemize}
+  \item We can do operations using vectors:
+\end{itemize}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+v1
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 2 3 4 5
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+v1 + 2
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 3 4 5 6 7
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+# addition between two vectors
+v1
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 2 3 4 5
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+v4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 3 5 7 9
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+v1 + v4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1]  2  5  8 11 14
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors (cont.)}
+\begin{lstlisting}[language=R]
+# combining two vectors
+v14 <- c(v1, v4)
+
+# Adding two vectors that are not same length (Not recommended)
+v6 <- c(1, 2, 3)
+
+v7 <- c(1, 2, 3, 4, 5)
+
+# Shorter: 1 2 3 1 2 (recycled)
+# Longer:  1 2 3 4 5
+# Result:  2 4 6 5 7
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+v6 + v7
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+Warning in v6 + v7: longer object length is not a multiple of shorter object
+length
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 2 4 6 5 7
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors}
+\begin{itemize}
+  \item Extracting a subset of a vector:
+\end{itemize}
+\begin{lstlisting}[language=R]
+vec1 <- c("e", "x", "a", "m", "p", "l", "e")
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+vec1[1]
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "e"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+vec1[3:5]  # extract the 3rd to 5th elements
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "a" "m" "p"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+vec1[c(4, 7)]  # extract the 4th and 7th elements
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "m" "e"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+vec1[-1]  # negation indexing: extract all elements except the 1st
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "x" "a" "m" "p" "l" "e"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors (cont.)}
+\begin{lstlisting}[language=R]
+vec1[-(3:5)]  # extract all elements except 3rd to the 5th elements
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "e" "p" "l" "e"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+vec1[-c(4, 7)]  # extract all elements except the 4th and 7th
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "e" "x" "a" "p" "l"
+\end{lstlisting}
+\begin{itemize}
+  \item Truncation using a logical vector:
+\end{itemize}
+\begin{lstlisting}[language=R]
+x <- c(1, 10, 8, 2, 6)
+
+x[x > 4]
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 10  8  6
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+# logical vector
+x > 4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] FALSE  TRUE  TRUE FALSE  TRUE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors (cont.)}
+\begin{itemize}
+  \item Override specific elements in a vector:
+\end{itemize}
+\begin{lstlisting}[language=R]
+v4 <- rep(NA, 20)
+v4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+v4[1:10] <- 1
+v4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1]  1  1  1  1  1  1  1  1  1  1 NA NA NA NA NA NA NA NA NA NA
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+v4[11:20] <- 2
+v4
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1] 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors}
+\framesubtitle{Practice}
+\begin{itemize}
+  \item Create the following vectors:
+\end{itemize}
+\begin{enumerate}
+  \item Values from 55 to 75.
+\end{enumerate}
+\begin{lstlisting}[language=R]
+seq(55,75)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1] 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{1}
+  \item ‘You’, ‘are’, ‘the’, ‘best!’ repeated 3 times.
+\end{enumerate}
+\begin{lstlisting}[language=R]
+rep(c('You', 'are',  'the', 'best!'),3)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1] "You"  "are"   "the"   "best!"  "You"  "are"   "the"   "best!"
+ [9] "You"  "are"   "the"   "best!"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Vectors (cont.)}
+\framesubtitle{Practice}
+\begin{enumerate}\setcounter{enumi}{2}
+  \item Even numbers from 20 to 84.
+\end{enumerate}
+\begin{lstlisting}[language=R]
+seq(from = 20, to = 84, by = 2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+ [1] 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 66 68
+[26] 70 72 74 76 78 80 82 84
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{3}
+  \item What is the length of the vector created in Q3?
+\end{enumerate}
+\begin{lstlisting}[language=R]
+length(seq(from = 20, to = 84, by = 2))
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 33
+\end{lstlisting}
+\begin{enumerate}\setcounter{enumi}{4}
+  \item Assign 34 to y. Is y a vector?
+\end{enumerate}
+\begin{lstlisting}[language=R]
+y <- 34
+is.vector(y)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] TRUE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix}
+\begin{itemize}
+  \item \textit{A two-dimensional table of vectors, where the elements are all of the same type}
+  \item To create a matrix in R, we can use \code{matrix(data, [nrow], [ncol], [byrow])}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+A <- matrix(1:8)
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.3\textwidth}
+\begin{lstlisting}[language=R]
+A
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1]
+[1,]    1
+[2,]    2
+[3,]    3
+[4,]    4
+[5,]    5
+[6,]    6
+[7,]    7
+[8,]    8
+\end{lstlisting}
+\end{column}
+\begin{column}{0.66\textwidth}
+\begin{lstlisting}[language=R]
+A_4x2 <- matrix(1:8, ncol = 2)
+A_4x2
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    1    5
+[2,]    2    6
+[3,]    3    7
+[4,]    4    8
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix (cont.)}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{lstlisting}[language=R]
+A_4x2_byrow <- matrix(1:8, ncol = 2,
+                      byrow = TRUE)
+A_4x2_byrow
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    1    2
+[2,]    3    4
+[3,]    5    6
+[4,]    7    8
+\end{lstlisting}
+\end{column}
+\begin{column}{0.46\textwidth}
+\begin{lstlisting}[language=R]
+# the data can also be a vector
+B <- matrix(c(2, 3, 1, 4),
+            nrow = 2)
+B
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    2    1
+[2,]    3    4
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix (cont.)}
+\begin{itemize}
+  \item Looking at matrix attributes: \code{nrow()}, \code{ncol()}, \code{dim()}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+nrow(A_4x2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 4
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+ncol(A_4x2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 2
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+dim(A_4x2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 4 2
+\end{lstlisting}
+\end{column}
+\end{columns}
+\begin{lstlisting}[language=R]
+dim(A_4x2)[1]
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 4
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix}
+\begin{itemize}
+  \item Extract elements from a matrix using the indexing feature:
+\end{itemize}
+\begin{lstlisting}[language=R]
+B
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    2    1
+[2,]    3    4
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+B[2, 2]  # second row & second column
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 4
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+B[1, ]  # first row & all columns
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 2 1
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+B[, 2]  # all rows & second column
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 4
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix (cont.)}
+\begin{itemize}
+  \item Basic operations using matrices:
+\end{itemize}
+\begin{lstlisting}[language=R]
+C <- matrix(1:6, ncol = 2)
+D <- matrix(7:12, ncol = 2)
+
+C
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+D
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    7   10
+[2,]    8   11
+[3,]    9   12
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+C + D
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    8   14
+[2,]   10   16
+[3,]   12   18
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix (cont.)}
+\begin{lstlisting}[language=R]
+C * D  # element-wise multiplication (NOT matrix multiplication)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]    7   40
+[2,]   16   55
+[3,]   27   72
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+C == D  # to check equivalence, you must use "=="
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+      [,1]  [,2]
+[1,] FALSE FALSE
+[2,] FALSE FALSE
+[3,] FALSE FALSE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix (cont.)}
+\begin{columns}[T]
+\begin{column}{0.4\textwidth}
+\begin{lstlisting}[language=R]
+t(C)  # transpose
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2] [,3]
+[1,]    1    2    3
+[2,]    4    5    6
+\end{lstlisting}
+\end{column}
+\begin{column}{0.56\textwidth}
+\begin{lstlisting}[language=R]
+C %*% t(D)  # matrix multiplication
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2] [,3]
+[1,]   47   52   57
+[2,]   64   71   78
+[3,]   81   90   99
+\end{lstlisting}
+\end{column}
+\end{columns}
+\begin{lstlisting}[language=R]
+solve(B)  # the inverse matrix
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2]
+[1,]  0.8 -0.2
+[2,] -0.6  0.4
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix}
+\begin{itemize}
+  \item Use \code{cbind()} to join by cols and \code{rbind()} to join by rows:
+\end{itemize}
+\begin{lstlisting}[language=R]
+v1 <- c(1, 3, 5)
+v2 <- c(2, 4, 6)
+
+mat_r <- rbind(v1, v2) # bind these 2 vectors in a form of row vectors
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+mat_r
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+   [,1] [,2] [,3]
+v1    1    3    5
+v2    2    4    6
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+mat_c <- cbind(v1, v2) # bind these 2 vectors in a form of col vectors
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix (cont.)}
+\begin{lstlisting}[language=R]
+mat_c
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     v1 v2
+[1,]  1  2
+[2,]  3  4
+[3,]  5  6
+\end{lstlisting}
+\begin{itemize}
+  \item The matrix will always be of one type. Therefore, if you are attempting to make a matrix with vectors of different types, R will coerce all the data to be of the most general type. For example:
+\end{itemize}
+\begin{lstlisting}[language=R]
+a <- c(1,2,3)
+b <- c(4,5,6)
+c <- c("a","b","c")
+
+my_matrix <- as.matrix(cbind(a,b,c)) # coerces all values to characters
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Matrix (cont.)}
+\begin{lstlisting}[language=R]
+my_matrix
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     a   b   c  
+[1,] "1" "4" "a"
+[2,] "2" "5" "b"
+[3,] "3" "6" "c"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+my_matrix2 <- as.matrix(cbind(a,b)) # keeps as numeric
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+my_matrix2
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     a b
+[1,] 1 4
+[2,] 2 5
+[3,] 3 6
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{List}
+\begin{itemize}
+  \item \textit{A one-dimensional vector that can contain objects of different types}
+  \item Use \code{list()} to create a collection of components:
+\end{itemize}
+\begin{lstlisting}[language=R]
+p <- "a list"
+q <- 12:16
+r <- matrix(1:9, ncol = 3)
+
+# Putting objects p, q, and r into a list 
+my_list <- list(p, q, r)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{List (cont.)}
+\begin{lstlisting}[language=R]
+my_list
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[[1]]
+[1] "a list"
+
+[[2]]
+[1] 12 13 14 15 16
+
+[[3]]
+     [,1] [,2] [,3]
+[1,]    1    4    7
+[2,]    2    5    8
+[3,]    3    6    9
+\end{lstlisting}
+\begin{itemize}
+  \item Subset a list using square brackets:
+\end{itemize}
+\begin{lstlisting}[language=R]
+my_list[[1]]
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "a list"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{List (cont.)}
+\begin{lstlisting}[language=R]
+# extract a certain elements in a component
+my_list[[2]][2] # extract the 2nd element in the 2nd component
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 13
+\end{lstlisting}
+\begin{itemize}
+  \item Can also access subset by the names of component:
+\end{itemize}
+\begin{lstlisting}[language=R]
+# Add names to components in a list (using "names()")
+names(my_list) <- c("p", "q", "r")
+my_list
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+$p
+[1] "a list"
+
+$q
+[1] 12 13 14 15 16
+
+$r
+     [,1] [,2] [,3]
+[1,]    1    4    7
+[2,]    2    5    8
+[3,]    3    6    9
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{List (cont.)}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+# Access components by name in list
+my_list$r
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     [,1] [,2] [,3]
+[1,]    1    4    7
+[2,]    2    5    8
+[3,]    3    6    9
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+my_list$r[3, 3]
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 9
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+

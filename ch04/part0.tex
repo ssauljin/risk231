@@ -1,0 +1,47 @@
+%======================================================================
+\section{An Example R Markdown Document}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}{About This Example}
+\begin{itemize}
+  \item This section reproduces the knitted HTML output of the default RMarkdown template (\code{R\_Intro\_Markdown.Rmd}) created in the previous section, with a few equations added.
+  \item Compare it with your own knitted file: the text, the R code chunk, its output, and the plot all come from the same \code{.Rmd} file.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{R Markdown}
+\begin{itemize}
+  \item This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see \url{http://rmarkdown.rstudio.com}.
+  \item When you click the \textbf{Knit} button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+\end{itemize}
+\begin{lstlisting}[language=R]
+summary(cars)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     speed           dist
+ Min.   : 4.0   Min.   :  2.00
+ 1st Qu.:12.0   1st Qu.: 26.00
+ Median :15.0   Median : 36.00
+ Mean   :15.4   Mean   : 42.98
+ 3rd Qu.:19.0   3rd Qu.: 56.00
+ Max.   :25.0   Max.   :120.00
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Including Plots}
+\begin{itemize}
+  \item You can also embed plots, for example:
+\end{itemize}
+\begin{center}
+\includegraphics[width=0.45\textwidth]{ch04/rmd_pressure_plot}
+\end{center}
+\begin{itemize}
+  \item Note that the \code{echo = FALSE} parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+  \item You can also write equations (LaTeX syntax), e.g.
+  \[
+    y_i = X_i \beta + \epsilon_i, \qquad X = U D V^T
+  \]
+\end{itemize}
+\end{frame}

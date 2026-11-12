@@ -1,0 +1,469 @@
+%======================================================================
+\section{Data Frames, Factors \& Tables, and File I/O}
+%======================================================================
+
+\sectionframe
+
+\begin{frame}[fragile]{Dataframe}
+\begin{itemize}
+  \item \textit{A two-dimensional table of vectors, that can contain data of different types}
+  \item To create a data frame, use \code{data.frame()}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+x <- 1:5
+y <- c("M", "F", "M", "M", "F")
+z <- c("one", "two", "three", "four", "five")
+
+my_df <- data.frame(x, y, z)
+my_df
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x y     z
+1 1 M   one
+2 2 F   two
+3 3 M three
+4 4 M  four
+5 5 F  five
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Dataframe: Attributes}
+\begin{lstlisting}[language=R]
+my_df
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x y     z
+1 1 M   one
+2 2 F   two
+3 3 M three
+4 4 M  four
+5 5 F  five
+\end{lstlisting}
+\begin{itemize}
+  \item Attributes \textit{(similar to matrix)}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+nrow(my_df)  # number of observations
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+ncol(my_df)  # number of variables
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 3
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Dataframe: Attributes (cont.)}
+\begin{lstlisting}[language=R]
+dim(my_df)  # dimensions of the dataframe
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 5 3
+\end{lstlisting}
+\begin{itemize}
+  \item Other helpful attribute functions:
+  \begin{itemize}
+    \item \code{head(df, n)} will look at the first \textit{n} observations of a dataframe
+    \item \code{tail(df, n)} will look at the last \textit{n} observations of a dataframe
+  \end{itemize}
+\end{itemize}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+head(my_df, 3)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x y     z
+1 1 M   one
+2 2 F   two
+3 3 M three
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+tail(my_df, 3)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x y     z
+3 3 M three
+4 4 M  four
+5 5 F  five
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Dataframe: Subsetting}
+\begin{lstlisting}[language=R]
+my_df
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x y     z
+1 1 M   one
+2 2 F   two
+3 3 M three
+4 4 M  four
+5 5 F  five
+\end{lstlisting}
+\begin{itemize}
+  \item Subsetting a data frame:
+  \item First, using a pair of indices, like a matrix:
+\end{itemize}
+\begin{lstlisting}[language=R]
+my_df[1, 2]  # extract the element in the 1st row and 2nd col
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "M"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+my_df[, 1]  # extract only the 1st col
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 2 3 4 5
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Dataframe: Subsetting (cont.)}
+\begin{lstlisting}[language=R]
+my_df[3, 2:3]  # 3rd row, col 2 through 3
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  y     z
+3 M three
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+my_df[c(1, nrow(my_df)), ]  # extract the 1st and the last obs
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+  x y    z
+1 1 M  one
+5 5 F five
+\end{lstlisting}
+\begin{itemize}
+  \item Second, by name:
+\end{itemize}
+\begin{lstlisting}[language=R]
+names(my_df)  # use names() to look at the names
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "x" "y" "z"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Dataframe: Subsetting (cont.)}
+\begin{lstlisting}[language=R]
+my_df$x  # access variable x
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 1 2 3 4 5
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+my_df$x[4]  # access the 4th element in variable x
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 4
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+mean(my_df$x)  # calculate the mean of variable x
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 3
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Miscellaneous Functions for Text Manipulation}
+\begin{itemize}
+  \item \code{paste()} joins strings; by default, \code{paste()} will use \mbox{\code{sep = " "}}
+\end{itemize}
+\begin{lstlisting}[language=R]
+paste("a", "b")
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "a b"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+paste("a", "b", sep = "")
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "ab"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+paste0("a", "b")  # a special version of paste() assuming sep = ""
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "ab"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Miscellaneous Functions for Text Manipulation (cont.)}
+\begin{itemize}
+  \item Assigning two vectors:
+\end{itemize}
+\begin{lstlisting}[language=R]
+c1 <- c("a", "b")
+c2 <- c("c", "d")
+\end{lstlisting}
+\begin{itemize}
+  \item Difference between \code{sep} and \code{collapse}:
+  \item \code{paste0(c1, c2)} vs \code{paste0(c1, c2, collapse = "+")}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+paste0(c1, c2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "ac" "bd"
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+paste0(c1, c2, collapse = "+")
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "ac+bd"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Miscellaneous Functions for Text Manipulation (cont.)}
+\begin{itemize}
+  \item Using \code{sep} and \code{collapse} together:
+\end{itemize}
+\begin{lstlisting}[language=R]
+paste(c1, c2, sep = "_", collapse = "+")
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "a_c+b_d"
+\end{lstlisting}
+\begin{itemize}
+  \item Concatenation between variable and text strings:
+\end{itemize}
+\begin{lstlisting}[language=R]
+ans <- 3
+paste0("The value of variable ans is ", ans)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "The value of variable ans is 3"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Factors}
+\begin{itemize}
+  \item In R, we usually use factor variable types for categorical variables.
+  \item Here, vector \code{f1} is numeric:
+\end{itemize}
+\begin{lstlisting}[language=R]
+f1 <- c(0, 1, 1, 1, 0, 0, 1)
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+class(f1)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "numeric"
+\end{lstlisting}
+\begin{itemize}
+  \item We can use the \code{factor()} function to change \code{f1}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+f1 <- factor(f1)
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+class(f1)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "factor"
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+f1
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] 0 1 1 1 0 0 1
+Levels: 0 1
+\end{lstlisting}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Factors (cont.)}
+\begin{itemize}
+  \item Now that \code{f1} is a factor vector, we can utilize its levels for our analysis.
+  \item We can use the \code{levels()} function to check the levels:
+\end{itemize}
+\begin{lstlisting}[language=R]
+levels(f1)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "0" "1"
+\end{lstlisting}
+\begin{itemize}
+  \item \code{as.factor()} will have the same result as \code{factor()}. This is preferred because it will provide a quicker return.
+\end{itemize}
+\begin{lstlisting}[language=R]
+f2 <- as.factor(c("Female", "Male", "Female", "Unknown", "Female", "Male", "Male", "Female"))
+f2
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] Female  Male    Female  Unknown Female  Male    Male    Female 
+Levels: Female Male Unknown
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Tables}
+\begin{lstlisting}[language=R]
+f2
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] Female  Male    Female  Unknown Female  Male    Male    Female 
+Levels: Female Male Unknown
+\end{lstlisting}
+\begin{itemize}
+  \item \code{table()} will produce a table to show how often each object for a categorical (factor) variable is given:
+\end{itemize}
+\begin{lstlisting}[language=R]
+table(f2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+f2
+ Female    Male Unknown 
+      4       3       1
+\end{lstlisting}
+\begin{itemize}
+  \item Small trick: to show relative frequency \textit{(or percentage)}, we can do the following:
+\end{itemize}
+\begin{lstlisting}[language=R]
+table(f2) / length(f2)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+f2
+ Female    Male Unknown 
+  0.500   0.375   0.125
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Tables (cont.)}
+\begin{lstlisting}[language=R]
+gender <- table(f2) / length(f2) # the result will be a named vector
+\end{lstlisting}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+gender[1]
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+Female 
+   0.5
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+names(gender)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "Female"  "Male"    "Unknown"
+\end{lstlisting}
+\end{column}
+\end{columns}
+\begin{itemize}
+  \item Two-way table using \code{table()}
+\end{itemize}
+\begin{lstlisting}[language=R]
+exam1 <- as.factor(c("A", "B", "F", "D", "B", "C", "A"))
+exam2 <- as.factor(c("A", "B", "C", "A", "C", "B", "B"))
+
+table(exam1, exam2) # a two-way table
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+     exam2
+exam1 A B C
+    A 1 1 0
+    B 0 1 1
+    C 0 1 0
+    D 1 0 0
+    F 0 0 1
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{File Input/Output}
+\begin{itemize}
+  \item \textit{Save the four reference files to your class folder.} \textit{NOTE: for the .txt file, you need to right-click and then select “save link as”.}
+  \item There are multiple ways to import \& export data, depending on what type of file/database it is and where it is stored.
+  \item \textbf{Connecting to text files:} \code{read.table()} is used to import data from \code{.txt} files:
+\end{itemize}
+\begin{lstlisting}[language=R]
+grade_df <- read.table("R Ref Files/grade.txt", header = TRUE)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{File Input/Output (cont.)}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+class(grade_df$Name)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "character"
+\end{lstlisting}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{lstlisting}[language=R]
+class(grade_df$Grade)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "integer"
+\end{lstlisting}
+\end{column}
+\end{columns}
+\begin{itemize}
+  \item Using the \code{stringsAsFactors} argument \textit{(by default = FALSE)}:
+\end{itemize}
+\begin{lstlisting}[language=R]
+grade_df2 <- read.table("R Ref Files/grade.txt", header = TRUE, stringsAsFactors = TRUE)
+\end{lstlisting}
+\begin{lstlisting}[language=R]
+class(grade_df2$Name)
+\end{lstlisting}
+\begin{lstlisting}[style=output]
+[1] "factor"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{File Input/Output (cont.)}
+\begin{itemize}
+  \item \textbf{Connecting to CSVs:} \code{read.csv()} is used to import data from \code{.csv} file:
+\end{itemize}
+\begin{lstlisting}[language=R]
+tl_df <- read.csv("R Ref Files/termlife.csv", header = TRUE)
+
+# convert the categorical variables in tl_df into factor variables
+tl_df$gender <- as.factor(tl_df$gender)
+tl_df$marstat <- as.factor(tl_df$marstat)
+tl_df$edu <- as.factor(tl_df$edu)
+tl_df$numhh <- as.factor(tl_df$numhh)
+\end{lstlisting}
+\begin{itemize}
+  \item \textbf{Connecting to Excel:} first, you need to install the \code{readxl} package. \textit{We’ll talk more about R packages in our next class.}
+  \item Then, you can use functions from the package to import your excel data.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{File Input/Output (cont.)}
+\begin{lstlisting}[language=R]
+# Import Excel data and name your data in R as follows:
+library(readxl)
+# To work properly with the below function, the Excel table
+# needs to start in cell A1 of the respective worksheet
+excel_data <- read_excel(path="C:/Users/ssaul/Desktop/MEPS_year.xlsx", 
+                         sheet = "raw_data")
+\end{lstlisting}
+\begin{itemize}
+  \item You can also import SAS files and connect to other servers. For example, in many companies, it will be helpful to connect directly to Oracle servers.
+  \item \textbf{Exporting data:} \code{write.table()} and \code{write.csv()} can be used to export \code{data.frame} to files:
+\end{itemize}
+\begin{lstlisting}[language=R]
+write.csv(grade_df, "R Ref Files/grade.csv")
+\end{lstlisting}
+\end{frame}
+
